@@ -25,8 +25,11 @@ func sendIso(writer http.ResponseWriter, request *http.Request) {
 	log.Println("New Request")
 	log.Printf("ISO Message: %v\n", req)
 
+	// config transaction
+	broker, group, topic := configTransaction(req)
+
 	// Produce event
-	err := doProducer(broker, topic1, req)
+	err := doProducer(broker, topic, req)
 
 	if err != nil {
 		errDesc := fmt.Sprintf("Failed sent to Kafka\nError: %v", err)
@@ -112,8 +115,11 @@ func sendFile(writer http.ResponseWriter, request *http.Request) {
 
 		log.Printf("ISO Message: %v\n", req)
 
+		// config transaction
+		broker, group, topic := configTransaction(req)
+
 		// Produce event
-		err := doProducer(broker, topic1, req)
+		err := doProducer(broker, topic, req)
 
 		if err != nil {
 			errDesc := fmt.Sprintf("Failed sent to Kafka\nError: %v", err)
@@ -231,8 +237,11 @@ func uploadFile(writer http.ResponseWriter, request *http.Request) {
 
 		log.Printf("ISO Message: %v\n", req)
 
+		// config transaction
+		broker, group, topic := configTransaction(req)
+
 		// Produce event
-		err := doProducer(broker, topic1, req)
+		err := doProducer(broker, topic, req)
 
 		if err != nil {
 			errDesc := fmt.Sprintf("Failed sent to Kafka\nError: %v", err)

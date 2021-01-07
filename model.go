@@ -66,3 +66,26 @@ type fieldDescription struct {
 	LenType     string `yaml:"LenType"`
 	Label       string `yaml:"Label"`
 }
+
+type MobileTransaction struct {
+	Pan                                 string `json:"pan"`
+	ProcessingCode                      string `json:"processingCode"`
+	TransactionAmount                   string `json:"transactionAmount"`
+	TransmissionDateTime                string `json:"transmissionDateTime"`
+	Stan                                string `json:"stan"`
+	LocalTransactionTime                string `json:"localTransactionTime"`
+	LocalTransactionDate                string `json:"localTransactionDate"`
+	MerchantType                        string `json:"merchantType"`
+	AcquiringIdentificationNumber       string `json:"acquiringIdentificationNumber"`
+	ForwardingIdentificationNumber      string `json:"forwardingIdentificationNumber"`
+	RetrievalNumber                     string `json:"retrievalNumber"`
+	TerminalID                          string `json:"terminalID"`
+	MerchantID                          string `json:"merchantID"`
+	TerminalName                        string `json:"terminalName"`
+	TransactionCurrencyCode             string `json:"transactionCurrencyCode"`
+	AuthorizationIdentificationResponse string `json:"authorizationIdentificationResponse"`
+	IssuerInstitutionID                 string `json:"issuerInstitutionID"`
+	SourceAccountNumber                 string `json:"sourceAccountNumber"`
+	MobileNumber                        string `json:"mobileNumber"`
+	BillerID                            string `json:"billerID"`
+}
