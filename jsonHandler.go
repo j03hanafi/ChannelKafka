@@ -6,9 +6,8 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
-	"strconv"
 
-	"github.com/mofax/iso8583"
+	"github.com/confluentinc/confluent-kafka-go/kafka"
 )
 
 // Handle all JSON Client request
@@ -17,7 +16,6 @@ func sendJSON(w http.ResponseWriter, r *http.Request) {
 
 	var response Response
 	var reqBody Transaction
-	var iso Iso8583
 
 	err := json.Unmarshal(body, &reqBody)
 	if err != nil {
@@ -35,42 +33,28 @@ func sendJSON(w http.ResponseWriter, r *http.Request) {
 		log.Println(err)
 		responseFormatter(w, response, 500)
 	} else {
-		msg, err := consumeResponse(broker, group, []string{topic2})
+		c, err := kafka.NewConsumer(&kafka.ConfigMap{
+			"bootstrap.servers": "localhost:9092",
+			"group.id":          "channel",
+			"auto.offset.reset": "earliest",
+		})
+
 		if err != nil {
-			errDesc := fmt.Sprintf("Failed to get response from Kafka\nError: %v", err)
-			response.ResponseCode, response.ResponseDescription = 500, errDesc
-			log.Println(err)
-			responseFormatter(w, response, 500)
-		} else {
-			if msg == "" {
-				errDesc := "Got empty response"
-				response.ResponseCode, response.ResponseDescription = 500, errDesc
-				log.Println(errDesc)
-				responseFormatter(w, response, 500)
-			} else {
-				header := msg[0:4]
-				data := msg[4:]
-
-				isoStruct := iso8583.NewISOStruct("spec1987.yml", false)
-
-				isoParsed, err := isoStruct.Parse(data)
-				if err != nil {
-					log.Printf("Error parsing iso message\nError: %v", err)
-				}
-
-				iso.Header, _ = strconv.Atoi(header)
-				iso.MTI = isoParsed.Mti.String()
-				iso.Hex, _ = iso8583.BitMapArrayToHex(isoParsed.Bitmap)
-
-				iso.Message, err = isoParsed.ToString()
-				if err != nil {
-					log.Printf("Iso Parsed failed convert to string.\nError: %v", err)
-				}
-				desc := "Success"
-				iso.ResponseStatus.ResponseCode, iso.ResponseStatus.ResponseDescription = 200, desc
-				log.Println(desc)
-				responseFormatter(w, iso, 200)
-			}
+			fmt.Println(err.Error())
 		}
+
+		c.SubscribeTopics([]string{topic2}, nil)
+
+		msg, err := c.ReadMessage(-1)
+		if err == nil {
+			fmt.Printf("Message on %s: %s\n", msg.TopicPartition, string(msg.Value))
+		} else {
+			fmt.Printf("Consumer error: %v (%v)\n", err, msg)
+		}
+
+		c.Close()
+		strRes := fromISO(string(msg.Value))
+
+		responseFormatter(w, strRes, 200)
 	}
 }
