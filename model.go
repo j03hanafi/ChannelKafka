@@ -54,3 +54,15 @@ type Iso8583 struct {
 	Message        string   `json:"message"`
 	ResponseStatus Response `json:"responseStatus"`
 }
+
+type spec struct {
+	fields map[int]fieldDescription
+}
+
+type fieldDescription struct {
+	ContentType string `yaml:"ContentType"`
+	MaxLen      int    `yaml:"MaxLen"`
+	MinLen      int    `yaml:"MinLen"`
+	LenType     string `yaml:"LenType"`
+	Label       string `yaml:"Label"`
+}
