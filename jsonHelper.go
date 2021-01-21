@@ -110,6 +110,8 @@ func toISO(val map[int]string) (string, error) {
 
 		if val[id] != "" {
 			iso.AddField(int64(id), val[id])
+
+			fmt.Print(ele.ContentType)
 		}
 
 	}

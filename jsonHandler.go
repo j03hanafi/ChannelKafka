@@ -4,11 +4,11 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
-	"time"
 	"log"
 	"net/http"
-	"github.com/mofax/iso8583"
+	"time"
 
+	"github.com/mofax/iso8583"
 )
 
 // Handle all JSON Client request
@@ -24,7 +24,6 @@ func sendJSON(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	
 	resISO, err := convJSON(reqBody)
 
 	if err != nil {
@@ -33,6 +32,7 @@ func sendJSON(w http.ResponseWriter, r *http.Request) {
 		resp.ReasonCode = 0
 		resp.ResponseDescription = err.Error()
 		responseFormatter(w, resp, 500)
+		return
 	}
 
 	err = doProducer(broker, topic1, resISO)
