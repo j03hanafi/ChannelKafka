@@ -4,10 +4,11 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"time"
 	"log"
 	"net/http"
+	"github.com/mofax/iso8583"
 
-	"github.com/confluentinc/confluent-kafka-go/kafka"
 )
 
 // Handle all JSON Client request
@@ -23,7 +24,16 @@ func sendJSON(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	resISO, _ := convJSON(reqBody)
+	
+	resISO, err := convJSON(reqBody)
+
+	if err != nil {
+		resp := Response{}
+		resp.ResponseCode = 500
+		resp.ReasonCode = 0
+		resp.ResponseDescription = err.Error()
+		responseFormatter(w, resp, 500)
+	}
 
 	err = doProducer(broker, topic1, resISO)
 
@@ -33,28 +43,39 @@ func sendJSON(w http.ResponseWriter, r *http.Request) {
 		log.Println(err)
 		responseFormatter(w, response, 500)
 	} else {
-		c, err := kafka.NewConsumer(&kafka.ConfigMap{
-			"bootstrap.servers": "localhost:9092",
-			"group.id":          "channel",
-			"auto.offset.reset": "earliest",
-		})
-
+		msg, err := consumeResponse(broker, group, []string{topic2})
 		if err != nil {
-			fmt.Println(err.Error())
-		}
-
-		c.SubscribeTopics([]string{topic2}, nil)
-
-		msg, err := c.ReadMessage(-1)
-		if err == nil {
-			fmt.Printf("Message on %s: %s\n", msg.TopicPartition, string(msg.Value))
+			errDesc := fmt.Sprintf("Failed to get response from Kafka\nError: %v", err)
+			response.ResponseCode, response.ResponseDescription = 500, errDesc
+			log.Println(err)
+			responseFormatter(w, response, 500)
 		} else {
-			fmt.Printf("Consumer error: %v (%v)\n", err, msg)
+			// Parse response string to ISO8583 data
+			header := msg[0:4]
+			data := msg[4:]
+
+			isoStruct := iso8583.NewISOStruct("spec1987.yml", false)
+
+			isoParsed, err := isoStruct.Parse(data)
+			if err != nil {
+				log.Printf("Error parsing iso message\nError: %v", err)
+			}
+
+			isoMsg, err := isoParsed.ToString()
+			if err != nil {
+				log.Printf("Iso Parsed failed convert to string.\nError: %v", err)
+			}
+
+			// create file from response
+			event := header + isoMsg
+			filename := "Response_from_" + isoParsed.Elements.GetElements()[3] + "@" + fmt.Sprintf(time.Now().Format("2006-01-02 15:04:05"))
+			file := CreateFile("storage/response/"+filename, event)
+			log.Println("File created: ", file)
+
+			strRes := fromISO(string(msg))
+
+			responseFormatter(w, strRes, 200)
 		}
 
-		c.Close()
-		strRes := fromISO(string(msg.Value))
-
-		responseFormatter(w, strRes, 200)
 	}
 }
