@@ -15,5 +15,8 @@ func server() *mux.Router {
 	router.HandleFunc("/payment/channel/upload", uploadFile).Methods("POST")
 	router.HandleFunc("/payment/channel/json", sendJSON).Methods("POST")
 
+	//Chipsakti
+	router.HandleFunc("/ppob/inquiry", ppobInquiry).Methods("POST")
+
 	return router
 }

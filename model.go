@@ -1,5 +1,9 @@
 package main
 
+import (
+	"time"
+)
+
 type CardAcceptorData struct {
 	CardAcceptorTerminalId  string `json:"cardAcceptorTerminalID"`
 	CardAcceptorName        string `json:"cardAcceptorName"`
@@ -88,4 +92,29 @@ type MobileTransaction struct {
 	SourceAccountNumber                 string `json:"sourceAccountNumber"`
 	MobileNumber                        string `json:"mobileNumber"`
 	BillerID                            string `json:"billerID"`
+}
+
+type PPOBInquiryRequest struct {
+	TransactionID string    `json:"transaction_id"`
+	PartnerID     string    `json:"partner_id"`
+	ProductCode   string    `json:"product_code"`
+	CustomerNo    string    `json:"customer_no"`
+	Periode       string    `json:"periode"`
+	MerchantCode  string    `json:"merchant_code"`
+	RequestTime   time.Time `json:"request_time"`
+	Signature     string    `json:"signature"`
+}
+
+type PPOBInquiryResponse struct {
+	Rc           string    `json:"rc"`
+	Msg          string    `json:"msg"`
+	Produk       string    `json:"produk"`
+	Nopel        string    `json:"nopel"`
+	Nama         string    `json:"nama"`
+	Tagihan      int       `json:"tagihan"`
+	Admin        int       `json:"admin"`
+	TotalTagihan int       `json:"total_tagihan"`
+	Reffid       string    `json:"reffid"`
+	Data         string    `json:"data"`
+	Restime      time.Time `json:"restime"`
 }

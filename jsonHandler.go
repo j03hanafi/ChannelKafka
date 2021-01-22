@@ -79,3 +79,9 @@ func sendJSON(w http.ResponseWriter, r *http.Request) {
 
 	}
 }
+
+//ChipSakti
+//PPOB Inquiry
+func ppobInquiry(w http.ResponseWriter, r *http.Request) {
+
+}
