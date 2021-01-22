@@ -62,7 +62,7 @@ func configTransaction(iso string) (broker string, group string, topic string) {
 
 var (
 	broker = "localhost:9092"
-	group  = "test-go"
-	topic1 = "channel-kafka"
-	topic2 = "kafka-biller"
+	group  = "channel"
+	topic1 = "channelKafka2"
+	topic2 = "kafkaBiller2"
 )
