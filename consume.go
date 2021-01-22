@@ -127,7 +127,7 @@ func consumeResponse(broker string, group string, topics []string) (string, erro
 	cm := kafka.ConfigMap{
 		"bootstrap.servers":    broker,
 		"group.id":             group,
-		"auto.offset.reset":    "latest",
+		"auto.offset.reset":    "earliest",
 		"enable.partition.eof": true,
 	}
 

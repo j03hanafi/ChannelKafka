@@ -16,5 +16,5 @@ func main() {
 
 	// Service setup
 	router := server()
-	log.Fatal(http.ListenAndServe(":6011", router))
+	log.Fatal(http.ListenAndServe(":6010", router))
 }
