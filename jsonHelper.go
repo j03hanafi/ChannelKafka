@@ -72,7 +72,7 @@ func convJSON(data Transaction) (string, error) {
 }
 
 func toISO(val map[int]string) (string, error) {
-	iso := iso8583.NewISOStruct("spec1987.yml", false)
+	iso := iso8583.NewISOStruct("spec1987.yml", true)
 	iso.AddMTI("0200")
 
 	something := spec{}
