@@ -98,17 +98,7 @@ func ppobInquiry(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// convert json to iso
-	reqISO := convJSONChipSakti(reqBody)
-
-	// return error if unmarshal unsuccessful
-	//if err != nil {
-	//	resp := Response{}
-	//	resp.ResponseCode = 500
-	//	resp.ReasonCode = 0
-	//	resp.ResponseDescription = err.Error()
-	//	responseFormatter(w, resp, 500)
-	//	return
-	//}
+	reqISO := convIsoPPOBInquiry(reqBody)
 
 	err = doProducer(broker, "chipsakti-channel", reqISO)
 
@@ -119,43 +109,110 @@ func ppobInquiry(w http.ResponseWriter, r *http.Request) {
 		responseFormatter(w, response, 500)
 	} else {
 
-		response.ResponseCode, response.ResponseDescription = 200, "Success"
-		log.Println("Produce Success")
-		responseFormatter(w, response, 200)
+		msg, err := consumeResponse(broker, group, []string{"chipsakti-biller"})
+		if err != nil {
+			errDesc := fmt.Sprintf("Failed to get response from Kafka\nError: %v", err)
+			response.ResponseCode, response.ResponseDescription = 500, errDesc
+			log.Println(err)
+			responseFormatter(w, response, 500)
+		} else {
+			// Parse response string to ISO8583 data
+			header := msg[0:4]
+			data := msg[4:]
 
-		//msg, err := consumeResponse(broker, group, []string{"chipsakti-biller"})
-		//if err != nil {
-		//	errDesc := fmt.Sprintf("Failed to get response from Kafka\nError: %v", err)
-		//	response.ResponseCode, response.ResponseDescription = 500, errDesc
-		//	log.Println(err)
-		//	responseFormatter(w, response, 500)
-		//} else {
-		//	// Parse response string to ISO8583 data
-		//	header := msg[0:4]
-		//	data := msg[4:]
-		//
-		//	isoStruct := iso8583.NewISOStruct("spec1987.yml", true)
-		//
-		//	isoParsed, err := isoStruct.Parse(data)
-		//	if err != nil {
-		//		log.Printf("Error parsing iso message\nError: %v", err)
-		//	}
-		//
-		//	isoMsg, err := isoParsed.ToString()
-		//	if err != nil {
-		//		log.Printf("Iso Parsed failed convert to string.\nError: %v", err)
-		//	}
-		//
-		//	// create file from response
-		//	event := header + isoMsg
-		//	filename := "Response_from_" + isoParsed.Elements.GetElements()[3] + "@" + fmt.Sprintf(time.Now().Format("2006-01-02 15:04:05"))
-		//	file := CreateFile("storage/response/"+filename, event)
-		//	log.Println("File created: ", file)
-		//
-		//	strRes := fromISO(msg)
-		//
-		//	responseFormatter(w, strRes, 200)
-		//}
+			isoStruct := iso8583.NewISOStruct("spec1987.yml", true)
+
+			isoParsed, err := isoStruct.Parse(data)
+			if err != nil {
+				log.Printf("Error parsing iso message\nError: %v", err)
+			}
+
+			isoMsg, err := isoParsed.ToString()
+			if err != nil {
+				log.Printf("Iso Parsed failed convert to string.\nError: %v", err)
+			}
+
+			// create file from response
+			event := header + isoMsg
+			filename := "Response_from_" + isoParsed.Elements.GetElements()[3] + "@" + fmt.Sprintf(time.Now().Format("2006-01-02 15:04:05"))
+			file := CreateFile("storage/response/"+filename, event)
+			log.Println("File created: ", file)
+
+			Resp := convJsonPPOBInquiry(isoParsed)
+
+			desc := "Success"
+			log.Println(desc)
+
+			responseFormatter(w, Resp, 200)
+		}
+
+	}
+}
+
+//PPOBPayment
+func ppobPayment(w http.ResponseWriter, r *http.Request) {
+	// get body json
+	body, _ := ioutil.ReadAll(r.Body)
+
+	var response Response
+	var reqBody PPOBPaymentRequest
+	//var resBody PPOBInquiryResponse
+
+	// unmarshal json with request struct
+	err := json.Unmarshal(body, &reqBody)
+	if err != nil {
+		log.Printf("json error with msg : %s", err.Error())
+		return
+	}
+
+	// convert json to iso
+	reqISO := convIsoPPOBPayment(reqBody)
+
+	err = doProducer(broker, "chipsakti-channel", reqISO)
+
+	if err != nil {
+		errDesc := fmt.Sprintf("Failed sent to Kafka\nError: %v", err)
+		response.ResponseCode, response.ResponseDescription = 500, errDesc
+		log.Println(err)
+		responseFormatter(w, response, 500)
+	} else {
+
+		msg, err := consumeResponse(broker, group, []string{"chipsakti-biller"})
+		if err != nil {
+			errDesc := fmt.Sprintf("Failed to get response from Kafka\nError: %v", err)
+			response.ResponseCode, response.ResponseDescription = 500, errDesc
+			log.Println(err)
+			responseFormatter(w, response, 500)
+		} else {
+			// Parse response string to ISO8583 data
+			header := msg[0:4]
+			data := msg[4:]
+
+			isoStruct := iso8583.NewISOStruct("spec1987.yml", true)
+
+			isoParsed, err := isoStruct.Parse(data)
+			if err != nil {
+				log.Printf("Error parsing iso message\nError: %v", err)
+			}
+
+			isoMsg, err := isoParsed.ToString()
+			if err != nil {
+				log.Printf("Iso Parsed failed convert to string.\nError: %v", err)
+			}
+
+			// create file from response
+			event := header + isoMsg
+			filename := "Response_from_" + isoParsed.Elements.GetElements()[3] + "@" + fmt.Sprintf(time.Now().Format("2006-01-02 15:04:05"))
+			file := CreateFile("storage/response/"+filename, event)
+			log.Println("File created: ", file)
+
+			Resp := convJsonPPOBPayment(isoParsed)
+
+			desc := "Success"
+			log.Println(desc)
+
+			responseFormatter(w, Resp, 200)
+		}
 
 	}
 }

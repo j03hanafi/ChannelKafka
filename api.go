@@ -17,6 +17,7 @@ func server() *mux.Router {
 
 	//Chipsakti
 	router.HandleFunc("/ppob/inquiry", ppobInquiry).Methods("POST")
+	router.HandleFunc("/ppob/payment", ppobPayment).Methods("POST")
 
 	return router
 }
