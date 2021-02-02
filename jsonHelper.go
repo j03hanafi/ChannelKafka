@@ -77,6 +77,71 @@ func convJsonPPOBPayment(parsedIso iso8583.IsoStruct) PPOBPaymentResponse {
 	return response
 }
 
+func convJsonPPOBStatus(parsedIso iso8583.IsoStruct) PPOBStatusResponse {
+	var response PPOBStatusResponse
+
+	log.Println("Converting ISO8583 to JSON")
+
+	emap := parsedIso.Elements.GetElements()
+	tagihan, _ := strconv.Atoi(emap[4])
+	admin, _ := strconv.Atoi(emap[5])
+	totalTagihan, _ := strconv.Atoi(emap[6])
+
+	// Map ISO8583 format to JSON data
+	response.Tagihan = tagihan
+	response.Admin = admin
+	response.TotalTagihan = totalTagihan
+	response.Reffid = emap[37]
+	response.Rc = emap[39]
+	response.Nama = emap[43]
+	response.TglLunas = emap[48]
+	response.Struk = emap[62]
+	response.Msg = emap[120]
+	response.Produk = emap[121]
+	response.Nopel = emap[122]
+	response.ReffNo = emap[123]
+	response.Status = emap[124]
+
+	log.Println("Convert success")
+	return response
+}
+
+func convJsonTopupBuy(parsedIso iso8583.IsoStruct) TopupBuyResponse {
+	var response TopupBuyResponse
+
+	log.Println("Converting ISO8583 to JSON")
+
+	emap := parsedIso.Elements.GetElements()
+
+	// Map ISO8583 format to JSON data
+	response.Rc = emap[39]
+	response.Restime = emap[48]
+	response.Msg = emap[120]
+	response.SN = emap[121]
+	response.Price = emap[122]
+
+	log.Println("Convert success")
+	return response
+}
+
+func convJsonTopupCheck(parsedIso iso8583.IsoStruct) TopupCheckResponse {
+	var response TopupCheckResponse
+
+	log.Println("Converting ISO8583 to JSON")
+
+	emap := parsedIso.Elements.GetElements()
+
+	// Map ISO8583 format to JSON data
+	response.Rc = emap[39]
+	response.Restime = emap[48]
+	response.Msg = emap[120]
+	response.SN = emap[121]
+	response.Price = emap[122]
+
+	log.Println("Convert success")
+	return response
+}
+
 func convJSON(data Transaction) (string, error) {
 
 	log.Println("New Request from JSON")
