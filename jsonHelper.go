@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"log"
 	"strconv"
+	"strings"
 
 	"github.com/mofax/iso8583"
 	"gopkg.in/yaml.v2"
@@ -36,14 +37,14 @@ func convJsonPPOBInquiry(parsedIso iso8583.IsoStruct) PPOBInquiryResponse {
 	response.Tagihan = tagihan
 	response.Admin = admin
 	response.TotalTagihan = totalTagihan
-	response.Reffid = emap[37]
-	response.Rc = emap[39]
-	response.Nama = emap[43]
+	response.Reffid = strings.Trim(emap[37], " ")
+	response.Rc = strings.Trim(emap[39], " ")
+	response.Nama = strings.Trim(emap[43], " ")
 	response.Restime = emap[48]
 	response.Data = emap[62]
 	response.Msg = emap[120]
-	response.Produk = emap[121]
-	response.Nopel = emap[122]
+	response.Produk = strings.Trim(emap[121], " ")
+	response.Nopel = strings.Trim(emap[122], " ")
 
 	log.Println("Convert success")
 	return response
