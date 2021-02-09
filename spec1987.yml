@@ -11,7 +11,7 @@
   LenType: fixed
   MaxLen: 6
 4:
-  ContentType: m
+  ContentType: "n"
   Label: Amount, transaction
   LenType: fixed
   MaxLen: 12

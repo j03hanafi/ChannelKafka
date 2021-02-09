@@ -98,7 +98,6 @@ type PPOBInquiryRequest struct {
 	Periode       string `json:"periode"`
 	MerchantCode  string `json:"merchant_code"`
 	RequestTime   string `json:"request_time"`
-	Signature     string `json:"signature"`
 }
 
 type PPOBInquiryResponse struct {
@@ -124,7 +123,6 @@ type PPOBPaymentRequest struct {
 	ReffID        string `json:"reff_id"`
 	Amount        int    `json:"amount"`
 	RequestTime   string `json:"request_time"`
-	Signature     string `json:"signature"`
 }
 
 type PPOBPaymentResponse struct {
@@ -137,9 +135,9 @@ type PPOBPaymentResponse struct {
 	Admin        int    `json:"admin"`
 	TotalTagihan int    `json:"total_tagihan"`
 	Reffid       string `json:"reffid"`
-	TglLunas     string `json:"tgl_lunas"`
+	TglLunas     string `json:"tanggal_lunas"`
 	Struk        string `json:"struk"`
-	ReffNo       string `json:"Reff_no"`
+	ReffNo       int    `json:"reff_no"`
 }
 
 type PPOBStatusRequest struct {
@@ -151,7 +149,6 @@ type PPOBStatusRequest struct {
 	ReffID        string `json:"reff_id"`
 	Amount        int    `json:"amount"`
 	RequestTime   string `json:"request_time"`
-	Signature     string `json:"signature"`
 }
 
 type PPOBStatusResponse struct {
@@ -164,7 +161,7 @@ type PPOBStatusResponse struct {
 	Admin        int    `json:"admin"`
 	TotalTagihan int    `json:"total_tagihan"`
 	Reffid       string `json:"reffid"`
-	TglLunas     string `json:"tgl_lunas"`
+	TglLunas     string `json:"tanggal_lunas"`
 	Struk        string `json:"struk"`
 	ReffNo       string `json:"Reff_no"`
 	Status       string `json:"status"`
@@ -177,7 +174,6 @@ type TopupBuyRequest struct {
 	CustomerNo    string `json:"customer_no"`
 	MerchantCode  string `json:"merchant_code"`
 	RequestTime   string `json:"request_time"`
-	Signature     string `json:"signature"`
 }
 
 type TopupBuyResponse struct {
@@ -195,7 +191,6 @@ type TopupCheckRequest struct {
 	CustomerNo    string `json:"customer_no"`
 	MerchantCode  string `json:"merchant_code"`
 	RequestTime   string `json:"request_time"`
-	Signature     string `json:"signature"`
 }
 
 type TopupCheckResponse struct {

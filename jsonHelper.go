@@ -46,6 +46,7 @@ func convJsonPPOBInquiry(parsedIso iso8583.IsoStruct) PPOBInquiryResponse {
 	response.Produk = strings.Trim(emap[121], " ")
 	response.Nopel = strings.Trim(emap[122], " ")
 
+	log.Printf("%+v\n", response)
 	log.Println("Convert success")
 	return response
 }
@@ -64,16 +65,17 @@ func convJsonPPOBPayment(parsedIso iso8583.IsoStruct) PPOBPaymentResponse {
 	response.Tagihan = tagihan
 	response.Admin = admin
 	response.TotalTagihan = totalTagihan
-	response.Reffid = emap[37]
-	response.Rc = emap[39]
-	response.Nama = emap[43]
-	response.TglLunas = emap[48]
-	response.Struk = emap[62]
-	response.Msg = emap[120]
-	response.Produk = emap[121]
-	response.Nopel = emap[122]
-	response.ReffNo = emap[123]
+	response.Reffid = strings.Trim(emap[37], " ")
+	response.Rc = strings.Trim(emap[39], " ")
+	response.Nama = strings.Trim(emap[43], " ")
+	response.TglLunas = strings.Trim(emap[48], " ")
+	response.Struk = strings.Trim(emap[62], " ")
+	response.Msg = strings.Trim(emap[120], " ")
+	response.Produk = strings.Trim(emap[121], " ")
+	response.Nopel = strings.Trim(emap[122], " ")
+	response.ReffNo, _ = strconv.Atoi(emap[123])
 
+	log.Printf("%+v\n", response)
 	log.Println("Convert success")
 	return response
 }
@@ -92,17 +94,18 @@ func convJsonPPOBStatus(parsedIso iso8583.IsoStruct) PPOBStatusResponse {
 	response.Tagihan = tagihan
 	response.Admin = admin
 	response.TotalTagihan = totalTagihan
-	response.Reffid = emap[37]
-	response.Rc = emap[39]
-	response.Nama = emap[43]
-	response.TglLunas = emap[48]
-	response.Struk = emap[62]
-	response.Msg = emap[120]
-	response.Produk = emap[121]
-	response.Nopel = emap[122]
-	response.ReffNo = emap[123]
-	response.Status = emap[124]
+	response.Reffid = strings.Trim(emap[37], " ")
+	response.Rc = strings.Trim(emap[39], " ")
+	response.Nama = strings.Trim(emap[43], " ")
+	response.TglLunas = strings.Trim(emap[48], " ")
+	response.Struk = strings.Trim(emap[62], " ")
+	response.Msg = strings.Trim(emap[120], " ")
+	response.Produk = strings.Trim(emap[121], " ")
+	response.Nopel = strings.Trim(emap[122], " ")
+	response.ReffNo = strings.Trim(emap[123], " ")
+	response.Status = strings.Trim(emap[124], " ")
 
+	log.Printf("%+v\n", response)
 	log.Println("Convert success")
 	return response
 }
@@ -115,12 +118,13 @@ func convJsonTopupBuy(parsedIso iso8583.IsoStruct) TopupBuyResponse {
 	emap := parsedIso.Elements.GetElements()
 
 	// Map ISO8583 format to JSON data
-	response.Rc = emap[39]
-	response.Restime = emap[48]
-	response.Msg = emap[120]
-	response.SN = emap[121]
-	response.Price = emap[122]
+	response.Rc = strings.Trim(emap[39], " ")
+	response.Restime = strings.Trim(emap[48], " ")
+	response.Msg = strings.Trim(emap[120], " ")
+	response.SN = strings.Trim(emap[121], " ")
+	response.Price = strings.Trim(emap[122], " ")
 
+	log.Printf("%+v\n", response)
 	log.Println("Convert success")
 	return response
 }
@@ -133,12 +137,13 @@ func convJsonTopupCheck(parsedIso iso8583.IsoStruct) TopupCheckResponse {
 	emap := parsedIso.Elements.GetElements()
 
 	// Map ISO8583 format to JSON data
-	response.Rc = emap[39]
-	response.Restime = emap[48]
-	response.Msg = emap[120]
-	response.SN = emap[121]
-	response.Price = emap[122]
+	response.Rc = strings.Trim(emap[39], " ")
+	response.Restime = strings.Trim(emap[48], " ")
+	response.Msg = strings.Trim(emap[120], " ")
+	response.SN = strings.Trim(emap[121], " ")
+	response.Price = strings.Trim(emap[122], " ")
 
+	log.Printf("%+v\n", response)
 	log.Println("Convert success")
 	return response
 }

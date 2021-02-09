@@ -44,12 +44,10 @@ func convIsoPPOBInquiry(data PPOBInquiryRequest) string {
 		request_time = rightPad(data.RequestTime, 19, " ")
 	}
 
-	signature := data.Signature
 	periode := data.Periode
 
 	val := map[int]string{
 		48: transaction_id + partner_id + product_code + customer_no + merchant_code + request_time + periode,
-		62: signature,
 	}
 
 	one := iso8583.NewISOStruct("spec1987.yml", true)
@@ -126,14 +124,12 @@ func convIsoPPOBPayment(data PPOBPaymentRequest) string {
 		reffId = rightPad(data.ReffID, 12, " ")
 	}
 
-	signature := data.Signature
 	amount := data.Amount
 
 	val := map[int]string{
 		4:  strconv.Itoa(amount),
 		37: reffId,
 		48: transaction_id + partner_id + product_code + customer_no + merchant_code + request_time,
-		62: signature,
 	}
 
 	one := iso8583.NewISOStruct("spec1987.yml", true)
@@ -210,14 +206,12 @@ func convIsoPPOBStatus(data PPOBStatusRequest) string {
 		reffId = rightPad(data.ReffID, 12, " ")
 	}
 
-	signature := data.Signature
 	amount := data.Amount
 
 	val := map[int]string{
 		4:  strconv.Itoa(amount),
 		37: reffId,
 		48: transaction_id + partner_id + product_code + customer_no + merchant_code + request_time,
-		62: signature,
 	}
 
 	one := iso8583.NewISOStruct("spec1987.yml", true)
@@ -290,11 +284,8 @@ func convIsoTopupBuy(data TopupBuyRequest) string {
 		request_time = rightPad(data.RequestTime, 19, " ")
 	}
 
-	signature := data.Signature
-
 	val := map[int]string{
 		48: transaction_id + partner_id + product_code + customer_no + merchant_code + request_time,
-		62: signature,
 	}
 
 	one := iso8583.NewISOStruct("spec1987.yml", true)
@@ -367,11 +358,8 @@ func convIsoTopupCheck(data TopupCheckRequest) string {
 		request_time = rightPad(data.RequestTime, 19, " ")
 	}
 
-	signature := data.Signature
-
 	val := map[int]string{
 		48: transaction_id + partner_id + product_code + customer_no + merchant_code + request_time,
-		62: signature,
 	}
 
 	one := iso8583.NewISOStruct("spec1987.yml", true)
