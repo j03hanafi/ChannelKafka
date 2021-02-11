@@ -73,7 +73,7 @@ func convJsonPPOBPayment(parsedIso iso8583.IsoStruct) PPOBPaymentResponse {
 	response.Msg = strings.Trim(emap[120], " ")
 	response.Produk = strings.Trim(emap[121], " ")
 	response.Nopel = strings.Trim(emap[122], " ")
-	response.ReffNo, _ = strconv.Atoi(emap[123])
+	response.ReffNo = strings.Trim(emap[123], " ")
 
 	log.Printf("%+v\n", response)
 	log.Println("Convert success")

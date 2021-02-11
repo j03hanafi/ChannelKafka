@@ -135,9 +135,9 @@ type PPOBPaymentResponse struct {
 	Admin        int    `json:"admin"`
 	TotalTagihan int    `json:"total_tagihan"`
 	Reffid       string `json:"reffid"`
-	TglLunas     string `json:"tanggal_lunas"`
+	TglLunas     string `json:"tgl_lunas"`
 	Struk        string `json:"struk"`
-	ReffNo       int    `json:"reff_no"`
+	ReffNo       string `json:"Reff_no"`
 }
 
 type PPOBStatusRequest struct {
@@ -161,7 +161,7 @@ type PPOBStatusResponse struct {
 	Admin        int    `json:"admin"`
 	TotalTagihan int    `json:"total_tagihan"`
 	Reffid       string `json:"reffid"`
-	TglLunas     string `json:"tanggal_lunas"`
+	TglLunas     string `json:"tgl_lunas"`
 	Struk        string `json:"struk"`
 	ReffNo       string `json:"Reff_no"`
 	Status       string `json:"status"`
