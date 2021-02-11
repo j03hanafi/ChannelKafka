@@ -138,6 +138,7 @@ type PPOBPaymentResponse struct {
 	TglLunas     string `json:"tgl_lunas"`
 	Struk        string `json:"struk"`
 	ReffNo       string `json:"Reff_no"`
+	Restime      string `json:"restime"`
 }
 
 type PPOBStatusRequest struct {
@@ -199,4 +200,10 @@ type TopupCheckResponse struct {
 	Restime string `json:"restime"`
 	SN      string `json:"sn"`
 	Price   string `json:"price"`
+}
+
+type UnsuccessfulChipsakti struct {
+	Rc      string `json:"rc"`
+	Msg     string `json:"msg"`
+	Restime string `json:"restime"`
 }

@@ -141,12 +141,24 @@ func ppobInquiry(w http.ResponseWriter, r *http.Request) {
 			file := CreateFile("storage/response/"+filename, event)
 			log.Println("File created: ", file)
 
-			Resp := convJsonPPOBInquiry(isoParsed)
+			rc := isoParsed.Elements.GetElements()[39]
 
-			desc := "PPOB Inquiry Success"
-			log.Println(desc)
+			if rc == "00" {
+				Resp := convJsonPPOBInquiry(isoParsed)
 
-			responseFormatter(w, Resp, 200)
+				desc := "PPOB Inquiry Success"
+				log.Println(desc)
+
+				responseFormatter(w, Resp, 200)
+			} else {
+				Resp := convJsonUnsuccessfulChipsakti(isoParsed)
+
+				desc := "PPOB Inquiry Unsuccessful"
+				log.Println(desc)
+
+				responseFormatter(w, Resp, 200)
+			}
+
 		}
 
 	}
@@ -212,12 +224,24 @@ func ppobPayment(w http.ResponseWriter, r *http.Request) {
 			file := CreateFile("storage/response/"+filename, event)
 			log.Println("File created: ", file)
 
-			Resp := convJsonPPOBPayment(isoParsed)
+			rc := isoParsed.Elements.GetElements()[39]
 
-			desc := "PPOB Payment Success"
-			log.Println(desc)
+			if rc == "00" {
+				Resp := convJsonPPOBPayment(isoParsed)
 
-			responseFormatter(w, Resp, 200)
+				desc := "PPOB Payment Success"
+				log.Println(desc)
+
+				responseFormatter(w, Resp, 200)
+			} else {
+				Resp := convJsonUnsuccessfulChipsakti(isoParsed)
+
+				desc := "PPOB Payment Unsuccessful"
+				log.Println(desc)
+
+				responseFormatter(w, Resp, 200)
+			}
+
 		}
 
 	}
@@ -283,12 +307,24 @@ func ppobStatus(w http.ResponseWriter, r *http.Request) {
 			file := CreateFile("storage/response/"+filename, event)
 			log.Println("File created: ", file)
 
-			Resp := convJsonPPOBStatus(isoParsed)
+			rc := isoParsed.Elements.GetElements()[39]
 
-			desc := "PPOB Status Success"
-			log.Println(desc)
+			if rc == "00" {
+				Resp := convJsonPPOBStatus(isoParsed)
 
-			responseFormatter(w, Resp, 200)
+				desc := "PPOB Status Success"
+				log.Println(desc)
+
+				responseFormatter(w, Resp, 200)
+			} else {
+				Resp := convJsonUnsuccessfulChipsakti(isoParsed)
+
+				desc := "PPOB Status Unsuccessful"
+				log.Println(desc)
+
+				responseFormatter(w, Resp, 200)
+			}
+
 		}
 
 	}
@@ -354,12 +390,23 @@ func topupBuy(w http.ResponseWriter, r *http.Request) {
 			file := CreateFile("storage/response/"+filename, event)
 			log.Println("File created: ", file)
 
-			Resp := convJsonTopupBuy(isoParsed)
+			rc := isoParsed.Elements.GetElements()[39]
 
-			desc := "Topup Buy Success"
-			log.Println(desc)
+			if rc == "00" {
+				Resp := convJsonTopupBuy(isoParsed)
 
-			responseFormatter(w, Resp, 200)
+				desc := "Topup Buy Success"
+				log.Println(desc)
+
+				responseFormatter(w, Resp, 200)
+			} else {
+				Resp := convJsonUnsuccessfulChipsakti(isoParsed)
+
+				desc := "Topup Buy Unsuccessful"
+				log.Println(desc)
+
+				responseFormatter(w, Resp, 200)
+			}
 		}
 
 	}
@@ -425,12 +472,24 @@ func topupCheck(w http.ResponseWriter, r *http.Request) {
 			file := CreateFile("storage/response/"+filename, event)
 			log.Println("File created: ", file)
 
-			Resp := convJsonTopupCheck(isoParsed)
+			rc := isoParsed.Elements.GetElements()[39]
 
-			desc := "Topup Check Success"
-			log.Println(desc)
+			if rc == "00" {
+				Resp := convJsonTopupCheck(isoParsed)
 
-			responseFormatter(w, Resp, 200)
+				desc := "Topup Check Success"
+				log.Println(desc)
+
+				responseFormatter(w, Resp, 200)
+			} else {
+				Resp := convJsonUnsuccessfulChipsakti(isoParsed)
+
+				desc := "Topup Check Unsuccessful"
+				log.Println(desc)
+
+				responseFormatter(w, Resp, 200)
+			}
+
 		}
 
 	}

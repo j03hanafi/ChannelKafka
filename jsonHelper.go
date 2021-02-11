@@ -23,6 +23,21 @@ func (s *spec) readFromFile(filename string) error {
 	return nil
 }
 
+func convJsonUnsuccessfulChipsakti(parsedIso iso8583.IsoStruct) UnsuccessfulChipsakti {
+	var response UnsuccessfulChipsakti
+
+	log.Println("Converting ISO8583 to JSON")
+	emap := parsedIso.Elements.GetElements()
+
+	response.Rc = strings.Trim(emap[39], " ")
+	response.Restime = emap[48]
+	response.Msg = emap[120]
+
+	log.Printf("%+v\n", response)
+	log.Println("Convert success")
+	return response
+}
+
 func convJsonPPOBInquiry(parsedIso iso8583.IsoStruct) PPOBInquiryResponse {
 	var response PPOBInquiryResponse
 
