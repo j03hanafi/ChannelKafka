@@ -75,6 +75,7 @@ func convJsonPPOBPayment(parsedIso iso8583.IsoStruct) PPOBPaymentResponse {
 	tagihan, _ := strconv.Atoi(emap[4])
 	admin, _ := strconv.Atoi(emap[5])
 	totalTagihan, _ := strconv.Atoi(emap[6])
+	struk := strings.Split(emap[62], ",")
 
 	// Map ISO8583 format to JSON data
 	response.Tagihan = tagihan
@@ -84,7 +85,7 @@ func convJsonPPOBPayment(parsedIso iso8583.IsoStruct) PPOBPaymentResponse {
 	response.Rc = strings.Trim(emap[39], " ")
 	response.Nama = strings.Trim(emap[43], " ")
 	response.TglLunas = strings.Trim(emap[48], " ")
-	response.Struk = strings.Trim(emap[62], " ")
+	response.Struk = struk
 	response.Msg = strings.Trim(emap[120], " ")
 	response.Produk = strings.Trim(emap[121], " ")
 	response.Nopel = strings.Trim(emap[122], " ")
@@ -104,6 +105,7 @@ func convJsonPPOBStatus(parsedIso iso8583.IsoStruct) PPOBStatusResponse {
 	tagihan, _ := strconv.Atoi(emap[4])
 	admin, _ := strconv.Atoi(emap[5])
 	totalTagihan, _ := strconv.Atoi(emap[6])
+	struk := strings.Split(emap[62], ",")
 
 	// Map ISO8583 format to JSON data
 	response.Tagihan = tagihan
@@ -113,7 +115,7 @@ func convJsonPPOBStatus(parsedIso iso8583.IsoStruct) PPOBStatusResponse {
 	response.Rc = strings.Trim(emap[39], " ")
 	response.Nama = strings.Trim(emap[43], " ")
 	response.TglLunas = strings.Trim(emap[48], " ")
-	response.Struk = strings.Trim(emap[62], " ")
+	response.Struk = struk
 	response.Msg = strings.Trim(emap[120], " ")
 	response.Produk = strings.Trim(emap[121], " ")
 	response.Nopel = strings.Trim(emap[122], " ")
