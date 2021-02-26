@@ -7,6 +7,34 @@ import (
 	"log"
 )
 
+func consumer() {
+	fmt.Println("Consumer started!")
+
+	c, err := kafka.NewConsumer(&kafka.ConfigMap{
+		"bootstrap.servers": "localhost:9092",
+		"group.id":          "goTest",
+		"auto.offset.reset": "earliest",
+	})
+
+	if err != nil {
+		panic(err)
+	}
+
+	c.SubscribeTopics([]string{"goroutine-channel"}, nil)
+
+	for {
+		msg, err := c.ReadMessage(-1)
+		if err == nil {
+			fmt.Printf("Message on %s: %s\n", msg.TopicPartition, string(msg.Value))
+			consumerChan <- string(msg.Value)
+		} else {
+			fmt.Printf("Consumer error: %v (%v)\n", err, msg)
+		}
+	}
+
+	c.Close()
+}
+
 // Consume all event occur in selected topic
 func doConsume(broker string, group string, topics []string) (msg string, error error) {
 

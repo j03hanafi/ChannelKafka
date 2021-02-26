@@ -207,3 +207,11 @@ type UnsuccessfulChipsakti struct {
 	Msg     string `json:"msg"`
 	Restime string `json:"restime"`
 }
+
+type GoRoutineReq struct {
+	Data string `json:"data"`
+}
+
+type GoRoutineRes struct {
+	Response string `json:"response"`
+}

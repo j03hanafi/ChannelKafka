@@ -22,5 +22,8 @@ func server() *mux.Router {
 	router.HandleFunc("/topup/buy", topupBuy).Methods("POST")
 	router.HandleFunc("/topup/check", topupCheck).Methods("POST")
 
+	//goroutine test
+	router.HandleFunc("/go", goTest).Methods("POST")
+
 	return router
 }

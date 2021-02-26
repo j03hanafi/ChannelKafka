@@ -80,6 +80,37 @@ func sendJSON(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+//GoRoutine Refactor Handler
+func goTest(w http.ResponseWriter, r *http.Request) {
+	log.Println("GoRoutine Endpoint requested")
+
+	//get body json
+	body, _ := ioutil.ReadAll(r.Body)
+
+	var request GoRoutineReq
+	var response GoRoutineRes
+
+	//unmarshal json request with GoRoutineReq struct
+	err := json.Unmarshal(body, &request)
+	if err != nil {
+		log.Printf("JSON Unmarshal Error: %s\n", err.Error())
+		response.Response = "JSON Unmarshal Error"
+		responseFormatter(w, response, 500)
+	}
+
+	//Convert request message to ISO
+	requestIso := "This is ISO message. The message is " + request.Data
+
+	// send request to channelChan
+	channelChan <- requestIso
+
+	// get response
+	response.Response = <-consumerChan
+	log.Println("Goroutine Passed!")
+	responseFormatter(w, response, 200)
+
+}
+
 //ChipSakti
 //PPOB Inquiry
 func ppobInquiry(w http.ResponseWriter, r *http.Request) {
