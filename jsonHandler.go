@@ -99,7 +99,7 @@ func goTest(w http.ResponseWriter, r *http.Request) {
 	}
 
 	//Convert request message to ISO
-	requestIso := "This is ISO message. The message is " + request.Data
+	requestIso := request.Data + "#ISO"
 
 	// send request to channelChan
 	channelChan <- requestIso

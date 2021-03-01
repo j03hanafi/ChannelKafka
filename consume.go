@@ -20,7 +20,7 @@ func consumer() {
 		panic(err)
 	}
 
-	c.SubscribeTopics([]string{"goroutine-channel"}, nil)
+	c.SubscribeTopics([]string{"goroutine-biller"}, nil)
 
 	for {
 		msg, err := c.ReadMessage(-1)
