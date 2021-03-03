@@ -1,18 +1,17 @@
 package main
 
 import (
-	"errors"
-	"fmt"
 	"github.com/confluentinc/confluent-kafka-go/kafka"
 	"log"
 )
 
-func consumer() {
-	fmt.Println("Consumer started!")
+func consumer(broker string, topics []string, group string) {
+	log.Println("Consumer (Kafka) started!")
 
+	// Setting up Consumer (Kafka) config
 	c, err := kafka.NewConsumer(&kafka.ConfigMap{
-		"bootstrap.servers": "localhost:9092",
-		"group.id":          "goTest",
+		"bootstrap.servers": broker,
+		"group.id":          group,
 		"auto.offset.reset": "earliest",
 	})
 
@@ -20,223 +19,20 @@ func consumer() {
 		panic(err)
 	}
 
-	c.SubscribeTopics([]string{"goroutine-biller"}, nil)
+	// Subscribe to topics
+	c.SubscribeTopics(topics, nil)
 
 	for {
 		msg, err := c.ReadMessage(-1)
 		if err == nil {
-			fmt.Printf("Message on %s: %s\n", msg.TopicPartition, string(msg.Value))
+			log.Printf("Message consumed on %s: %s\n", msg.TopicPartition, string(msg.Value))
+
+			// Send any consumed event to consumerChan
 			consumerChan <- string(msg.Value)
 		} else {
-			fmt.Printf("Consumer error: %v (%v)\n", err, msg)
+			log.Printf("Consumer error: %v (%v)\n", err, msg)
 		}
 	}
 
 	c.Close()
-}
-
-// Consume all event occur in selected topic
-func doConsume(broker string, group string, topics []string) (msg string, error error) {
-
-	log.Printf("Starting consumer\n")
-
-	// Setup consumer config
-	cm := kafka.ConfigMap{
-		"bootstrap.servers":    broker,
-		"group.id":             group,
-		"auto.offset.reset":    "latest",
-		"enable.partition.eof": true,
-	}
-
-	// Create new consumer
-	c, err := kafka.NewConsumer(&cm)
-
-	// check if there's error in creating The Consumer
-	if err != nil {
-		if ke, ok := err.(kafka.Error); ok == true {
-			switch ec := ke.Code(); ec {
-			case kafka.ErrInvalidArg:
-				log.Printf("Can't create consumer because wrong configuration (code: %d)!\n\t%v\n\nTo see the configuration options, refer to https://github.com/edenhill/librdkafka/blob/master/CONFIGURATION.md\n", ec, err)
-			default:
-				log.Printf("Can't create consumer (code: %d)!\n\t%v\n", ec, err)
-			}
-		} else {
-			// Not Kafka Error occurs
-			log.Printf("Can't create consumer because generic error! \n\t%v\n", err)
-		}
-	} else {
-
-		// subscribe to the topic
-		if err := c.SubscribeTopics(topics, nil); err != nil {
-			log.Printf("There's an Error subscribing to the topic:\n\t%v\n", err)
-		}
-
-		// For capturing errors from the go-routine
-		errorChan := make(chan string, 8)
-
-		doTerm := false
-
-		for !doTerm {
-			ev := c.Poll(1000)
-			if ev == nil {
-				continue
-			} else {
-				switch ev.(type) {
-
-				case *kafka.Message:
-					// It's a message
-					km := ev.(*kafka.Message)
-					log.Printf("Message '%v' received from topic '%v' (partition %d at offset %d)\n",
-						string(km.Value),
-						*km.TopicPartition.Topic,
-						km.TopicPartition.Partition,
-						km.TopicPartition.Offset)
-
-					msg = string(km.Value)
-
-					if km.Headers != nil {
-						log.Printf("Headers: %v\n", km.Headers)
-					}
-
-				case kafka.PartitionEOF:
-					pe := ev.(kafka.PartitionEOF)
-					log.Printf("Got to the end of partition %v on topic %v at offset %v\n",
-						pe.Partition,
-						*pe.Topic,
-						pe.Offset)
-
-				case kafka.OffsetsCommitted:
-					continue
-
-				case kafka.Error:
-					// It's an error
-					em := ev.(kafka.Error)
-					errorChan <- fmt.Sprintf("☠️ Uh oh, caught an error:\n\t%v\n", em)
-
-				default:
-					// It's not anything we were expecting
-					log.Printf("Got an event that's not a Message, Error, or PartitionEOF 👻\n\t%v\n", ev)
-
-				}
-			}
-		}
-
-		// check error when done
-		done := false
-		var err string
-		for !done {
-			if t, o := <-errorChan; o == false {
-				done = true
-			} else {
-				err += t
-			}
-		}
-
-		if len(err) > 0 {
-			// if error not nil
-			log.Printf("returning an error\n")
-			return "", errors.New(err)
-		}
-		log.Printf("Closing consumer...\n")
-		c.Close()
-	}
-
-	return msg, nil
-
-}
-
-// Consumer for initial request to get response
-func consumeResponse(broker string, group string, topics []string) (string, error) {
-
-	var response string
-	log.Printf("Starting consumer\n")
-
-	// Setup consumer config
-	cm := kafka.ConfigMap{
-		"bootstrap.servers":    broker,
-		"group.id":             group,
-		"auto.offset.reset":    "earliest",
-		"enable.partition.eof": true,
-	}
-
-	// Create new consumer
-	c, err := kafka.NewConsumer(&cm)
-
-	// check if there's error in creating The Consumer
-	if err != nil {
-		if ke, ok := err.(kafka.Error); ok == true {
-			switch ec := ke.Code(); ec {
-			case kafka.ErrInvalidArg:
-				return "", fmt.Errorf("Can't create consumer because wrong configuration (code: %d)!\n\t%v\n\nTo see the configuration options, refer to https://github.com/edenhill/librdkafka/blob/master/CONFIGURATION.md\n", ec, err)
-			default:
-				return "", fmt.Errorf("Can't create consumer (code: %d)!\n\t%v\n", ec, err)
-			}
-		} else {
-			// Not Kafka Error occurs
-			return "", fmt.Errorf("Can't create consumer because generic error! \n\t%v\n", err)
-		}
-	} else {
-
-		// subscribe to the topic
-		if err := c.SubscribeTopics(topics, nil); err != nil {
-			return "", fmt.Errorf("There's an Error subscribing to the topic:\n\t%v\n", err)
-		} else {
-
-			doTerm := false
-
-			for !doTerm {
-				ev := c.Poll(10000)
-				if ev == nil {
-					continue
-				} else {
-
-					switch ev.(type) {
-
-					case *kafka.Message:
-						// It's a message
-						km := ev.(*kafka.Message)
-						log.Printf("Message '%v' \n\treceived from topic '%v' (partition %d at offset %d)\n",
-							string(km.Value),
-							*km.TopicPartition.Topic,
-							km.TopicPartition.Partition,
-							km.TopicPartition.Offset)
-						if km.Headers != nil {
-							log.Printf("Headers: %v\n", km.Headers)
-						}
-						response = string(km.Value)
-
-					case kafka.PartitionEOF:
-						pe := ev.(kafka.PartitionEOF)
-						log.Printf("Got to the end of partition %v on topic %v at offset %v\n",
-							pe.Partition,
-							*pe.Topic,
-							pe.Offset)
-						doTerm = true
-
-					case kafka.OffsetsCommitted:
-						continue
-
-					case kafka.Error:
-						// It's an error
-						em := ev.(kafka.Error)
-						return "", fmt.Errorf("☠️ Uh oh, caught an error:\n\t%v\n", em)
-
-					default:
-						// It's not anything we were expecting
-						log.Printf("Got an event that's not a Message, Error, or PartitionEOF\n\t%v\n", ev)
-
-					}
-
-				}
-			}
-
-			log.Printf("Closing consumer...\n")
-			c.Close()
-
-		}
-
-	}
-
-	return response, nil
-
 }

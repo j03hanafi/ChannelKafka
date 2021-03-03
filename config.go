@@ -7,40 +7,19 @@ import (
 	"os"
 )
 
+// Struct for kafkaConfig.json
 type Config struct {
-	Broker []string `json:"broker"`
-	Topics []Topic  `json:"topics"`
-	Groups string   `json:"groups"`
+	Broker         string   `json:"broker"`
+	ProducerTopics []string `json:"producer_topics"`
+	ConsumerTopics []string `json:"consumer_topics"`
+	Group          string   `json:"group"`
 }
 
-type Topic struct {
-	Topic  string   `json:"topic"`
-	Prefix []string `json:"prefix"`
-}
+// Return config for setting up Kafka Producer and Consumer
+func configKafka() (broker string, producerTopics []string, consumerTopics []string, group string) {
+	log.Printf("Get config for current request")
 
-func contain(data []string, target string) bool {
-	for _, i := range data {
-		if i == target {
-			return true
-		}
-	}
-	return false
-}
-
-func getTopic(prefix string, listTopic []Topic) string {
-	for _, i := range listTopic {
-		if contain(i.Prefix, prefix) {
-			return i.Topic
-		}
-	}
-	return "Topic tidak ditemukan"
-}
-
-// Config for Apache Kafka
-func configTransaction(iso string) (broker string, group string, topic string) {
-	log.Printf("Get config for current request: %s\n", iso)
-
-	file, _ := os.Open("./config.json")
+	file, _ := os.Open("./kafkaConfig.json")
 	defer file.Close()
 
 	b, err := ioutil.ReadAll(file)
@@ -51,18 +30,5 @@ func configTransaction(iso string) (broker string, group string, topic string) {
 	var config Config
 	json.Unmarshal(b, &config)
 
-	prefix := iso[4:8]
-	selectedTopic := getTopic(prefix, config.Topics)
-	log.Println("Broker: ", config.Broker[0])
-	log.Println("Group: ", config.Groups)
-	log.Println("Topic: ", selectedTopic)
-
-	return config.Broker[0], config.Groups, selectedTopic
+	return config.Broker, config.ProducerTopics, config.ConsumerTopics, config.Group
 }
-
-var (
-	broker = "localhost:9092"
-	group  = "channel"
-	topic1 = "channelKafka2"
-	topic2 = "kafkaBiller2"
-)
