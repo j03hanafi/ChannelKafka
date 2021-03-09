@@ -189,7 +189,7 @@ func topupBuy(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-// Handler to Topup Checl request
+// Handler to Topup Check request
 func topupCheck(w http.ResponseWriter, r *http.Request) {
 
 	log.Println(" New Topup Check request")

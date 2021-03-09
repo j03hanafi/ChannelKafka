@@ -43,7 +43,7 @@ func main() {
 	var wg sync.WaitGroup
 
 	// Get config for Kafka Producer and Consumer
-	broker, producerTopics, consumerTopics, groups := configKafka()
+	broker, producerTopic, consumerTopics, groups := configKafka()
 
 	// Run Consumer (Kafka)
 	go consumer(broker, consumerTopics, groups)
@@ -59,7 +59,7 @@ func main() {
 			wg.Add(1)
 
 			// Run Producer (Kafka)
-			go producer(&wg, broker, producerTopics, producerChan)
+			go producer(&wg, broker, producerTopic, producerChan)
 
 			// Send new request to producerChan, then produce the new request to Kafka
 			producerChan <- newRequest

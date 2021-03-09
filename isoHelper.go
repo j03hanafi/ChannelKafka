@@ -92,6 +92,7 @@ func getIsoPPOBInquiry(jsonRequest PPOBInquiryRequest) (isoRequest string) {
 		requestTime = rightPad(jsonRequest.RequestTime, 19, " ")
 	}
 
+	// Assign data to map and add MTI
 	request := map[int]string{
 		48: transactionID + partnerID + productCode + customerNo + merchantCode + requestTime + periode,
 	}
@@ -111,6 +112,7 @@ func getIsoPPOBInquiry(jsonRequest PPOBInquiryRequest) (isoRequest string) {
 	file := CreateFile("storage/request/"+filename, isoRequest)
 	log.Println("Request file: ", file)
 
+	log.Println("Convert success")
 	log.Printf("PPOB Inquiry Request (ISO8583): %s\n", isoRequest)
 	return isoRequest
 }
@@ -153,6 +155,7 @@ func getIsoPPOBPayment(jsonRequest PPOBPaymentRequest) (isoRequest string) {
 		reffId = rightPad(jsonRequest.ReffID, 12, " ")
 	}
 
+	// Assign data to map and add MTI
 	request := map[int]string{
 		4:  strconv.Itoa(amount),
 		37: reffId,
@@ -174,6 +177,7 @@ func getIsoPPOBPayment(jsonRequest PPOBPaymentRequest) (isoRequest string) {
 	file := CreateFile("storage/request/"+filename, isoRequest)
 	log.Println("Request file: ", file)
 
+	log.Println("Convert success")
 	log.Printf("PPOB Payment Request (ISO8583): %s\n", isoRequest)
 	return isoRequest
 }
@@ -216,6 +220,7 @@ func getIsoPPOBStatus(jsonRequest PPOBStatusRequest) (isoRequest string) {
 		reffId = rightPad(jsonRequest.ReffID, 12, " ")
 	}
 
+	// Assign data to map and add MTI
 	request := map[int]string{
 		4:  strconv.Itoa(amount),
 		37: reffId,
@@ -237,6 +242,7 @@ func getIsoPPOBStatus(jsonRequest PPOBStatusRequest) (isoRequest string) {
 	file := CreateFile("storage/request/"+filename, isoRequest)
 	log.Println("Request file: ", file)
 
+	log.Println("Convert success")
 	log.Printf("PPOB Status Request (ISO8583): %s\n", isoRequest)
 	return isoRequest
 }
@@ -274,6 +280,7 @@ func getIsoTopupBuy(jsonRequest TopupBuyRequest) (isoRequest string) {
 		requestTime = rightPad(jsonRequest.RequestTime, 19, " ")
 	}
 
+	// Assign data to map and add MTI
 	request := map[int]string{
 		48: transactionID + partnerID + productCode + customerNo + merchantCode + requestTime,
 	}
@@ -293,6 +300,7 @@ func getIsoTopupBuy(jsonRequest TopupBuyRequest) (isoRequest string) {
 	file := CreateFile("storage/request/"+filename, isoRequest)
 	log.Println("Request file: ", file)
 
+	log.Println("Convert success")
 	log.Printf("Topup Buy Request (ISO8583): %s\n", isoRequest)
 	return isoRequest
 }
@@ -330,6 +338,7 @@ func getIsoTopupCheck(jsonRequest TopupCheckRequest) (isoRequest string) {
 		requestTime = rightPad(jsonRequest.RequestTime, 19, " ")
 	}
 
+	// Assign data to map and add MTI
 	request := map[int]string{
 		48: transactionID + partnerID + productCode + customerNo + merchantCode + requestTime,
 	}
@@ -349,6 +358,7 @@ func getIsoTopupCheck(jsonRequest TopupCheckRequest) (isoRequest string) {
 	file := CreateFile("storage/request/"+filename, isoRequest)
 	log.Println("Request file: ", file)
 
+	log.Println("Convert success")
 	log.Printf("Topup Check Request (ISO8583): %s\n", isoRequest)
 	return isoRequest
 }

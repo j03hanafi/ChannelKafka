@@ -1,14 +1,13 @@
 package main
 
 import (
-	"fmt"
 	"github.com/confluentinc/confluent-kafka-go/kafka"
 	"log"
 	"sync"
 )
 
-func producer(wg *sync.WaitGroup, broker string, topics []string, message <-chan string) {
-	fmt.Println("Producer started!")
+func producer(wg *sync.WaitGroup, broker string, topic string, message <-chan string) {
+	log.Println("Producer started!")
 
 	// Setting up Consumer (Kafka) config
 	p, err := kafka.NewProducer(&kafka.ConfigMap{
@@ -34,9 +33,6 @@ func producer(wg *sync.WaitGroup, broker string, topics []string, message <-chan
 	}()
 
 	// Setting up kafka message to get ready to be produced
-	// Selected producer topic
-	topic := topics[0]
-
 	// message to be produced
 	msg := <-message
 

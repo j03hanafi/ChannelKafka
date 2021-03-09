@@ -10,13 +10,13 @@ import (
 // Struct for kafkaConfig.json
 type Config struct {
 	Broker         string   `json:"broker"`
-	ProducerTopics []string `json:"producer_topics"`
+	ProducerTopic  string   `json:"producer_topic"`
 	ConsumerTopics []string `json:"consumer_topics"`
 	Group          string   `json:"group"`
 }
 
 // Return config for setting up Kafka Producer and Consumer
-func configKafka() (broker string, producerTopics []string, consumerTopics []string, group string) {
+func configKafka() (broker string, producerTopic string, consumerTopics []string, group string) {
 	log.Printf("Get config for current request")
 
 	file, _ := os.Open("./kafkaConfig.json")
@@ -30,5 +30,7 @@ func configKafka() (broker string, producerTopics []string, consumerTopics []str
 	var config Config
 	json.Unmarshal(b, &config)
 
-	return config.Broker, config.ProducerTopics, config.ConsumerTopics, config.Group
+	log.Printf("Kafka Config -> Broker: `%v`, Producer Topic: `%v`, Consumer Topics: `%v`, Group: `%v`",
+		config.Broker, config.ProducerTopic, config.ConsumerTopics, config.Group)
+	return config.Broker, config.ProducerTopic, config.ConsumerTopics, config.Group
 }
