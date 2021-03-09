@@ -147,7 +147,7 @@ func ppobStatus(w http.ResponseWriter, r *http.Request) {
 // Handler to Topup Buy request
 func topupBuy(w http.ResponseWriter, r *http.Request) {
 
-	log.Println(" New Topup Buy request")
+	log.Println("New Topup Buy request")
 
 	// Get request body JSON
 	body, _ := ioutil.ReadAll(r.Body)

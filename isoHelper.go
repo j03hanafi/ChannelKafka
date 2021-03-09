@@ -92,8 +92,9 @@ func getIsoPPOBInquiry(jsonRequest PPOBInquiryRequest) (isoRequest string) {
 		requestTime = rightPad(jsonRequest.RequestTime, 19, " ")
 	}
 
-	// Assign data to map and add MTI
+	// Assign data to map, Adding PAN for PPOB Inquiry Request, and add MTI
 	request := map[int]string{
+		3:  "380001",
 		48: transactionID + partnerID + productCode + customerNo + merchantCode + requestTime + periode,
 	}
 	mti := "0200"
@@ -101,8 +102,6 @@ func getIsoPPOBInquiry(jsonRequest PPOBInquiryRequest) (isoRequest string) {
 	// Converting request map to isoStruct
 	isoStruct := getIso(request, mti)
 
-	// Adding PAN for PPOB Inquiry Request
-	isoStruct.AddField(3, "380001")
 	isoMessage, _ := isoStruct.ToString()
 	isoHeader := fmt.Sprintf("%04d", uniseg.GraphemeClusterCount(isoMessage))
 	isoRequest = isoHeader + isoMessage
@@ -155,8 +154,9 @@ func getIsoPPOBPayment(jsonRequest PPOBPaymentRequest) (isoRequest string) {
 		reffId = rightPad(jsonRequest.ReffID, 12, " ")
 	}
 
-	// Assign data to map and add MTI
+	// Assign data to map, Adding PAN for PPOB Payment Request, and add MTI
 	request := map[int]string{
+		3:  "810001",
 		4:  strconv.Itoa(amount),
 		37: reffId,
 		48: transactionID + partnerID + productCode + customerNo + merchantCode + requestTime,
@@ -166,8 +166,6 @@ func getIsoPPOBPayment(jsonRequest PPOBPaymentRequest) (isoRequest string) {
 	// Converting request map to isoStruct
 	isoStruct := getIso(request, mti)
 
-	// Adding PAN for PPOB Payment Request
-	isoStruct.AddField(3, "810001")
 	isoMessage, _ := isoStruct.ToString()
 	isoHeader := fmt.Sprintf("%04d", uniseg.GraphemeClusterCount(isoMessage))
 	isoRequest = isoHeader + isoMessage
@@ -220,8 +218,9 @@ func getIsoPPOBStatus(jsonRequest PPOBStatusRequest) (isoRequest string) {
 		reffId = rightPad(jsonRequest.ReffID, 12, " ")
 	}
 
-	// Assign data to map and add MTI
+	// Assign data to map, Adding PAN for PPOB Status Request, and add MTI
 	request := map[int]string{
+		3:  "380002",
 		4:  strconv.Itoa(amount),
 		37: reffId,
 		48: transactionID + partnerID + productCode + customerNo + merchantCode + requestTime,
@@ -231,8 +230,6 @@ func getIsoPPOBStatus(jsonRequest PPOBStatusRequest) (isoRequest string) {
 	// Converting request map to isoStruct
 	isoStruct := getIso(request, mti)
 
-	// Adding PAN for PPOB Status Request
-	isoStruct.AddField(3, "380002")
 	isoMessage, _ := isoStruct.ToString()
 	isoHeader := fmt.Sprintf("%04d", uniseg.GraphemeClusterCount(isoMessage))
 	isoRequest = isoHeader + isoMessage
@@ -280,8 +277,9 @@ func getIsoTopupBuy(jsonRequest TopupBuyRequest) (isoRequest string) {
 		requestTime = rightPad(jsonRequest.RequestTime, 19, " ")
 	}
 
-	// Assign data to map and add MTI
+	// Assign data to map, Adding PAN for Topup Buy Request, and add MTI
 	request := map[int]string{
+		3:  "810002",
 		48: transactionID + partnerID + productCode + customerNo + merchantCode + requestTime,
 	}
 	mti := "0200"
@@ -289,8 +287,6 @@ func getIsoTopupBuy(jsonRequest TopupBuyRequest) (isoRequest string) {
 	// Converting request map to isoStruct
 	isoStruct := getIso(request, mti)
 
-	// Adding PAN for Topup Buy Request
-	isoStruct.AddField(3, "810002")
 	isoMessage, _ := isoStruct.ToString()
 	isoHeader := fmt.Sprintf("%04d", uniseg.GraphemeClusterCount(isoMessage))
 	isoRequest = isoHeader + isoMessage
@@ -338,8 +334,9 @@ func getIsoTopupCheck(jsonRequest TopupCheckRequest) (isoRequest string) {
 		requestTime = rightPad(jsonRequest.RequestTime, 19, " ")
 	}
 
-	// Assign data to map and add MTI
+	// Assign data to map, Adding PAN for Topup Check Request, and add MTI
 	request := map[int]string{
+		3:  "380003",
 		48: transactionID + partnerID + productCode + customerNo + merchantCode + requestTime,
 	}
 	mti := "0200"
@@ -347,8 +344,6 @@ func getIsoTopupCheck(jsonRequest TopupCheckRequest) (isoRequest string) {
 	// Converting request map to isoStruct
 	isoStruct := getIso(request, mti)
 
-	// Adding PAN for Topup Check Request
-	isoStruct.AddField(3, "380003")
 	isoMessage, _ := isoStruct.ToString()
 	isoHeader := fmt.Sprintf("%04d", uniseg.GraphemeClusterCount(isoMessage))
 	isoRequest = isoHeader + isoMessage
