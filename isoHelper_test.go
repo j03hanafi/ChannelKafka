@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/mofax/iso8583"
 	"testing"
 )
 
@@ -143,5 +144,24 @@ func TestGetIsoTopupCheck(t *testing.T) {
 		t.Errorf("getIsoTopupCheck() failed, \nexpected\t: %v, \ngot\t\t\t: %v", expected, result)
 	} else {
 		t.Log("getIsoTopupCheck() success")
+	}
+}
+
+func TestParseResponse(t *testing.T) {
+	isoStruct := iso8583.NewISOStruct("spec1987.yml", true)
+	parsed := "0210a0000000020100000000000000000100380001002200192021-03-18 08:03:30023Tagihan tidak ditemukan"
+	isoExpected, err := isoStruct.Parse(parsed)
+	if err != nil {
+		t.Errorf("Error parsing iso message. Error: %v", err)
+	}
+	expected, _ := isoExpected.ToString()
+	header := "0095"
+	isoResult := parseResponse(header + parsed)
+	result, _ := isoResult.ToString()
+
+	if result != expected {
+		t.Errorf("parseResponse() failed, \nexpected\t: %v, \ngot\t\t\t: %v", expected, result)
+	} else {
+		t.Log("parseResponse() success")
 	}
 }

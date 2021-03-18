@@ -56,7 +56,7 @@ func ppobInquiry(w http.ResponseWriter, r *http.Request) {
 // Handler to PPOB Payment request
 func ppobPayment(w http.ResponseWriter, r *http.Request) {
 
-	log.Println(" New PPOB Payment request")
+	log.Println("New PPOB Payment request")
 
 	// Get request body JSON
 	body, _ := ioutil.ReadAll(r.Body)
@@ -123,6 +123,7 @@ func ppobStatus(w http.ResponseWriter, r *http.Request) {
 
 	// Get response from consumerChan
 	msg := <-consumerChan
+	log.Printf("PPOB Status Response (ISO8583): %s\n", msg)
 
 	// Parse response string to ISO8583 data and create response file
 	isoResponse := parseResponse(msg)
@@ -168,6 +169,7 @@ func topupBuy(w http.ResponseWriter, r *http.Request) {
 
 	// Get response from consumerChan
 	msg := <-consumerChan
+	log.Printf("Topup Buy Response (ISO8583): %s\n", msg)
 
 	// Parse response string to ISO8583 data and create response file
 	isoResponse := parseResponse(msg)
@@ -213,6 +215,7 @@ func topupCheck(w http.ResponseWriter, r *http.Request) {
 
 	// Get response from consumerChan
 	msg := <-consumerChan
+	log.Printf("Topup Check Response (ISO8583): %s\n", msg)
 
 	// Parse response string to ISO8583 data and create response file
 	isoResponse := parseResponse(msg)
