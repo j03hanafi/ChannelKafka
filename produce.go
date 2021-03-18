@@ -82,14 +82,20 @@ func arrProduce(msg string, head string) {
 		Value:          []byte(msg),
 		Headers:        []kafka.Header{{Key: header["key"], Value: []byte(header["value"])}},
 	}, nil)
+
+	p.Flush(3 * 1000)
 }
 
 func checkResponse(head string) string {
 	search := true
 	var res string
+	index := 0
 	for search {
 		for _, ele := range arr {
-			if ele.stan == head {
+			if ele.stan != head {
+				arr[index] = ele
+				index++
+			} else {
 				search = false
 				res = ele.msgin
 			}
