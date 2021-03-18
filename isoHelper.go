@@ -354,7 +354,7 @@ func getIsoTopupCheck(jsonRequest TopupCheckRequest) (isoRequest string) {
 	return isoRequest
 }
 
-func epayRintis(jsonRequest rintisRequest) (isoRequest string) {
+func epayRintis(jsonRequest rintisRequest) (string, string) {
 	log.Println("Converting rintis Request JSON Request to ISO8583")
 	log.Printf("Topup Check Request (JSON): %v\n", jsonRequest)
 
@@ -390,7 +390,7 @@ func epayRintis(jsonRequest rintisRequest) (isoRequest string) {
 	// Adding PAN for Topup Check Request
 	isoMessage, _ := isoStruct.ToString()
 	isoHeader := fmt.Sprintf("%04d", uniseg.GraphemeClusterCount(isoMessage))
-	isoRequest = isoHeader + isoMessage
+	isoRequest := isoHeader + isoMessage
 
 	// Create file from request
 	filename := "Request_from_ePayRintis@" + fmt.Sprintf(time.Now().Format("2006-01-02 15:04:05"))
@@ -398,7 +398,7 @@ func epayRintis(jsonRequest rintisRequest) (isoRequest string) {
 	log.Println("Request file: ", file)
 
 	log.Printf("Topup Check Request (ISO8583): %s\n", isoRequest)
-	return isoRequest
+	return isoRequest, jsonRequest.Stan
 
 }
 

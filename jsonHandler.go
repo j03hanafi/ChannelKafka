@@ -246,8 +246,9 @@ func rintis(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	reqISO := epayRintis(request)
-	isoResponse := parseResponse(reqISO)
+	reqISO, head := epayRintis(request)
+	arrProduce(reqISO, head)
+	isoResponse := checkResponse(head)
 
 	responseFormatter(w, isoResponse, 200)
 

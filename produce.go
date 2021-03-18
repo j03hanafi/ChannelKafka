@@ -59,3 +59,41 @@ func producer(wg *sync.WaitGroup, broker string, topics []string, message <-chan
 	// Done with worker
 	wg.Done()
 }
+
+func arrProduce(msg string, head string) {
+	fmt.Println("Producer started!")
+
+	// Setting up Consumer (Kafka) config
+	p, err := kafka.NewProducer(&kafka.ConfigMap{
+		"bootstrap.servers": "localhost:9092",
+	})
+	topic := "channelKafka"
+	if err != nil {
+		panic(err)
+	}
+	defer p.Close()
+
+	header := map[string]string{
+		"key":   "uniqueKey",
+		"value": head,
+	}
+	p.Produce(&kafka.Message{
+		TopicPartition: kafka.TopicPartition{Topic: &topic, Partition: kafka.PartitionAny},
+		Value:          []byte(msg),
+		Headers:        []kafka.Header{{Key: header["key"], Value: []byte(header["value"])}},
+	}, nil)
+}
+
+func checkResponse(head string) string {
+	search := true
+	var res string
+	for search {
+		for _, ele := range arr {
+			if ele.stan == head {
+				search = false
+				res = ele.msgin
+			}
+		}
+	}
+	return res
+}
