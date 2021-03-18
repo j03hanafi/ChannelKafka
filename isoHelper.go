@@ -2,15 +2,16 @@ package main
 
 import (
 	"fmt"
-	"github.com/go-yaml/yaml"
-	"github.com/mofax/iso8583"
-	"github.com/rivo/uniseg"
 	"io/ioutil"
 	"log"
 	"sort"
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/go-yaml/yaml"
+	"github.com/mofax/iso8583"
+	"github.com/rivo/uniseg"
 )
 
 // Return ISO Message by converting data from map[int]string
@@ -351,6 +352,54 @@ func getIsoTopupCheck(jsonRequest TopupCheckRequest) (isoRequest string) {
 
 	log.Printf("Topup Check Request (ISO8583): %s\n", isoRequest)
 	return isoRequest
+}
+
+func epayRintis(jsonRequest rintisRequest) (isoRequest string) {
+	log.Println("Converting rintis Request JSON Request to ISO8583")
+	log.Printf("Topup Check Request (JSON): %v\n", jsonRequest)
+
+	amount := strconv.Itoa(jsonRequest.TotalAmount)
+
+	request := map[int]string{
+		2:   jsonRequest.Pan,
+		3:   jsonRequest.ProcessingCode,
+		4:   amount,
+		7:   jsonRequest.TransmissionDateTime,
+		11:  jsonRequest.Stan,
+		12:  jsonRequest.LocalTransactionTime,
+		13:  jsonRequest.LocalTransactionDate,
+		17:  jsonRequest.CaptureDate,
+		32:  jsonRequest.AcquirerID,
+		35:  jsonRequest.Track2Data,
+		37:  jsonRequest.Refnum,
+		41:  jsonRequest.TerminalID,
+		43:  jsonRequest.CardAcceptorData,
+		48:  jsonRequest.AdditionalData,
+		49:  jsonRequest.Currency,
+		52:  jsonRequest.PIN,
+		60:  jsonRequest.TerminalData,
+		103: jsonRequest.AccountTo,
+		126: jsonRequest.TokenData,
+	}
+
+	mti := "0200"
+
+	// Converting request map to isoStruct
+	isoStruct := getIso(request, mti)
+
+	// Adding PAN for Topup Check Request
+	isoMessage, _ := isoStruct.ToString()
+	isoHeader := fmt.Sprintf("%04d", uniseg.GraphemeClusterCount(isoMessage))
+	isoRequest = isoHeader + isoMessage
+
+	// Create file from request
+	filename := "Request_from_ePayRintis@" + fmt.Sprintf(time.Now().Format("2006-01-02 15:04:05"))
+	file := CreateFile("storage/request/"+filename, isoRequest)
+	log.Println("Request file: ", file)
+
+	log.Printf("Topup Check Request (ISO8583): %s\n", isoRequest)
+	return isoRequest
+
 }
 
 // Log sorted converted ISO Message

@@ -233,3 +233,22 @@ func topupCheck(w http.ResponseWriter, r *http.Request) {
 		responseFormatter(w, response, 200)
 	}
 }
+
+func rintis(w http.ResponseWriter, r *http.Request) {
+	log.Println("New Request To Rintis")
+
+	body, _ := ioutil.ReadAll(r.Body)
+	var request rintisRequest
+
+	err := json.Unmarshal(body, &request)
+	if err != nil {
+		log.Printf("Error unmarshal JSON: %s", err.Error())
+		return
+	}
+
+	reqISO := epayRintis(request)
+	isoResponse := parseResponse(reqISO)
+
+	responseFormatter(w, isoResponse, 200)
+
+}

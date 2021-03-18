@@ -2,9 +2,10 @@ package main
 
 import (
 	"fmt"
-	"github.com/confluentinc/confluent-kafka-go/kafka"
 	"log"
 	"sync"
+
+	"github.com/confluentinc/confluent-kafka-go/kafka"
 )
 
 func producer(wg *sync.WaitGroup, broker string, topics []string, message <-chan string) {

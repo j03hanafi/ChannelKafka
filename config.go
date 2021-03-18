@@ -7,6 +7,13 @@ import (
 	"os"
 )
 
+var arr []resConsume
+
+type resConsume struct {
+	stan  string
+	msgin string
+}
+
 // Struct for kafkaConfig.json
 type Config struct {
 	Broker         string   `json:"broker"`

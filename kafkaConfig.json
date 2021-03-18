@@ -4,7 +4,8 @@
     "goroutine-channel"
   ],
   "consumer_topics": [
-    "goroutine-biller"
+    "goroutine-biller",
+    "kafkaBiller"
   ],
   "group": "test-go"
 }

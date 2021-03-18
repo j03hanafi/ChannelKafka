@@ -14,6 +14,7 @@ func server() *mux.Router {
 	router.HandleFunc("/ppob/status", ppobStatus).Methods("POST")
 	router.HandleFunc("/topup/buy", topupBuy).Methods("POST")
 	router.HandleFunc("/topup/check", topupCheck).Methods("POST")
+	router.HandleFunc("/epay/rintis", rintis).Methods("POST")
 
 	return router
 }

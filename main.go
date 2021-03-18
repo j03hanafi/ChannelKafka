@@ -46,7 +46,8 @@ func main() {
 	broker, producerTopics, consumerTopics, groups := configKafka()
 
 	// Run Consumer (Kafka)
-	go consumer(broker, consumerTopics, groups)
+	go arrConsumer(broker, consumerTopics, groups)
+	//go consumer(broker, consumerTopics, groups)
 
 	// loop for checking if there is any new request from `Channel` that has been sent to channelChan
 	for {
