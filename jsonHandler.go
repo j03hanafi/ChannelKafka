@@ -2,9 +2,11 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
+	"time"
 )
 
 // Handler to PPOB Inquiry request
@@ -28,6 +30,8 @@ func ppobInquiry(w http.ResponseWriter, r *http.Request) {
 
 	// Send ISO8583 request to channelChan
 	channelChan <- isoRequest
+	fmt.Println("PPOB Inquiry sleep for 5 seconds to process response from channel")
+	time.Sleep(5 * time.Second)
 
 	// Get response from consumerChan
 	msg := <-consumerChan
@@ -74,6 +78,8 @@ func ppobPayment(w http.ResponseWriter, r *http.Request) {
 
 	// Send ISO8583 request to channelChan
 	channelChan <- isoRequest
+	fmt.Println("PPOB Payment sleep for 2 seconds to process response from channel")
+	time.Sleep(2 * time.Second)
 
 	// Get response from consumerChan
 	msg := <-consumerChan
