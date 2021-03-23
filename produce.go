@@ -60,7 +60,8 @@ func producer(wg *sync.WaitGroup, broker string, topics []string, message <-chan
 	wg.Done()
 }
 
-func arrProduce(msg string, head string) {
+func arrProduce(wg *sync.WaitGroup, broker string, topics []string, message <-chan resConsume) {
+	data := <-message
 	fmt.Println("Producer started!")
 
 	// Setting up Consumer (Kafka) config
@@ -75,29 +76,29 @@ func arrProduce(msg string, head string) {
 
 	header := map[string]string{
 		"key":   "uniqueKey",
-		"value": head,
+		"value": data.Stan,
 	}
 	p.Produce(&kafka.Message{
 		TopicPartition: kafka.TopicPartition{Topic: &topic, Partition: kafka.PartitionAny},
-		Value:          []byte(msg),
+		Value:          []byte(data.Msgin),
 		Headers:        []kafka.Header{{Key: header["key"], Value: []byte(header["value"])}},
 	}, nil)
 
 	p.Flush(3 * 1000)
 }
 
-func checkResponse(head string) string {
+func checkResponse(head string) resConsume {
 	search := true
-	var res string
+	var res resConsume
 	index := 0
 	for search {
 		for _, ele := range arr {
-			if ele.stan != head {
+			if ele.Stan != head {
 				arr[index] = ele
 				index++
 			} else {
 				search = false
-				res = ele.msgin
+				res = ele
 			}
 		}
 	}

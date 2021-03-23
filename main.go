@@ -8,9 +8,11 @@ import (
 )
 
 var (
-	channelChan  = make(chan string) // channel for send-receive data from-to `Channel`
-	producerChan = make(chan string) // channel for receive data from channelChan and send data to `Producer (Kafka)`
-	consumerChan = make(chan string) // channel for receive data from `Consumer (Kafka)` and send data to channelChan
+	channelChan     = make(chan string)     // channel for send-receive data from-to `Channel`
+	producerChan    = make(chan string)     // channel for receive data from channelChan and send data to `Producer (Kafka)`
+	consumerChan    = make(chan string)     // channel for receive data from `Consumer (Kafka)` and send data to channelChan
+	channelArrChan  = make(chan resConsume) // channel for receive data from `Consumer (Kafka)` and send data to channelChan
+	producerArrChan = make(chan resConsume) // channel for receive data from `Consumer (Kafka)` and send data to channelChan
 )
 
 func main() {
@@ -64,6 +66,20 @@ func main() {
 
 			// Send new request to producerChan, then produce the new request to Kafka
 			producerChan <- newRequest
+
+			// Waiting until Producer (Kafka) finish producing event
+			wg.Wait()
+		case newRequest := <-channelArrChan:
+			log.Println("New request from `Channel` is ready to produce to Kafka")
+
+			// Add WaitGroup counter to wait until Producer (Kafka) finish producing an event
+			wg.Add(1)
+
+			// Run Producer (Kafka)
+			go arrProduce(&wg, broker, producerTopics, producerArrChan)
+
+			// Send new request to producerChan, then produce the new request to Kafka
+			producerArrChan <- newRequest
 
 			// Waiting until Producer (Kafka) finish producing event
 			wg.Wait()

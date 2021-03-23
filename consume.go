@@ -51,7 +51,7 @@ func arrConsumer(broker string, topics []string, group string) {
 	}
 
 	// Subscribe to topics
-	c.SubscribeTopics([]string{"channelKafka"}, nil)
+	c.SubscribeTopics([]string{"kafkaBiller"}, nil)
 
 	for {
 		msg, err := c.ReadMessage(-1)
@@ -59,8 +59,8 @@ func arrConsumer(broker string, topics []string, group string) {
 			log.Printf("Message consumed on %s: %s\n", msg.TopicPartition, string(msg.Value))
 			header := msg.Headers
 			arr = append(arr, resConsume{
-				stan:  string(header[0].Value),
-				msgin: string(msg.Value)})
+				Stan:  string(header[0].Value),
+				Msgin: string(msg.Value)})
 			fmt.Println(arr)
 		} else {
 			log.Printf("Consumer error: %v (%v)\n", err, msg)

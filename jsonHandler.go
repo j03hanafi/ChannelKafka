@@ -247,7 +247,11 @@ func rintis(w http.ResponseWriter, r *http.Request) {
 	}
 
 	reqISO, head := epayRintis(request)
-	arrProduce(reqISO, head)
+	data := resConsume{
+		Stan:  head,
+		Msgin: reqISO,
+	}
+	channelArrChan <- data
 	isoResponse := checkResponse(head)
 
 	responseFormatter(w, isoResponse, 200)

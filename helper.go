@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -10,6 +11,11 @@ import (
 
 // Response formatter
 func responseFormatter(w http.ResponseWriter, data interface{}, statusCode int) {
+	j, err := json.Marshal(&data)
+	if err != nil {
+		log.Fatalf("Error occured during marshaling. Error: %s", err.Error())
+	}
+	fmt.Println(string(j))
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(statusCode)
 	json.NewEncoder(w).Encode(data)

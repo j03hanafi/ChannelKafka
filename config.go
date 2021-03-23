@@ -10,8 +10,8 @@ import (
 var arr []resConsume
 
 type resConsume struct {
-	stan  string
-	msgin string
+	Stan  string `json:"stan"`
+	Msgin string `json:"msgin"`
 }
 
 // Struct for kafkaConfig.json
