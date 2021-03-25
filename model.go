@@ -154,3 +154,16 @@ type cardAcceptorData struct {
 	CardAcceptorCity        string `json:"cardAcceptorCity"`
 	CardAcceptorCountryCode string `json:"cardAcceptorCountryCode"`
 }
+
+type resConsume struct {
+	Head    string `json:"stan"`
+	Content string `json:"msgin"`
+}
+
+// Struct for kafkaConfig.json
+type Config struct {
+	Broker         string   `json:"broker"`
+	ProducerTopics []string `json:"producer_topics"`
+	ConsumerTopics []string `json:"consumer_topics"`
+	Group          string   `json:"group"`
+}

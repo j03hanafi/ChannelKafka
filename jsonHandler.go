@@ -234,26 +234,35 @@ func topupCheck(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func rintis(w http.ResponseWriter, r *http.Request) {
+func rintisReqHandler(w http.ResponseWriter, r *http.Request) {
 	log.Println("New Request To Rintis")
 
+	// Get msg from body
 	body, _ := ioutil.ReadAll(r.Body)
 	var request rintisRequest
 
+	// Unmarshal body to struct
 	err := json.Unmarshal(body, &request)
 	if err != nil {
 		log.Printf("Error unmarshal JSON: %s", err.Error())
 		return
 	}
 
-	reqISO, head := epayRintis(request)
-	data := resConsume{
-		Stan:  head,
-		Msgin: reqISO,
-	}
-	channelArrChan <- data
-	isoResponse := checkResponse(head)
+	// Run convertion
+	reqISO, head := structRintisToIso(request)
 
+	// Put header and message on variable
+	data := resConsume{
+		Head:    head,
+		Content: reqISO,
+	}
+	// Send variable to channel to produce to kafka
+	channelArrChan <- data
+
+	// Get data from arr consume (tempStorage) with same head
+	isoResponse := getValueFromArray(head)
+
+	// Make response to request
 	responseFormatter(w, isoResponse, 200)
 
 }

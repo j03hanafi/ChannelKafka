@@ -60,7 +60,8 @@ func producer(wg *sync.WaitGroup, broker string, topics []string, message <-chan
 	wg.Done()
 }
 
-func arrProduce(wg *sync.WaitGroup, broker string, topics []string, message <-chan resConsume) {
+func produceMsgToKafka(broker string, topics []string, message <-chan resConsume) {
+	//put channel data in variable
 	data := <-message
 	fmt.Println("Producer started!")
 
@@ -68,39 +69,29 @@ func arrProduce(wg *sync.WaitGroup, broker string, topics []string, message <-ch
 	p, err := kafka.NewProducer(&kafka.ConfigMap{
 		"bootstrap.servers": "localhost:9092",
 	})
-	topic := "channelKafka"
+	//set variable for topic
+	topic := topics[1]
 	if err != nil {
 		panic(err)
 	}
 	defer p.Close()
 
+	//set msg header
 	header := map[string]string{
 		"key":   "uniqueKey",
-		"value": data.Stan,
+		"value": data.Head,
 	}
+
+	//produce msg
 	p.Produce(&kafka.Message{
 		TopicPartition: kafka.TopicPartition{Topic: &topic, Partition: kafka.PartitionAny},
-		Value:          []byte(data.Msgin),
+		Value:          []byte(data.Content),
 		Headers:        []kafka.Header{{Key: header["key"], Value: []byte(header["value"])}},
 	}, nil)
 
 	p.Flush(3 * 1000)
-}
 
-func checkResponse(head string) resConsume {
-	search := true
-	var res resConsume
-	index := 0
-	for search {
-		for _, ele := range arr {
-			if ele.Stan != head {
-				arr[index] = ele
-				index++
-			} else {
-				search = false
-				res = ele
-			}
-		}
-	}
-	return res
+	log.Println("Producer closing!")
+
+	// Done with worker
 }

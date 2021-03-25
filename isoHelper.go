@@ -354,12 +354,14 @@ func getIsoTopupCheck(jsonRequest TopupCheckRequest) (isoRequest string) {
 	return isoRequest
 }
 
-func epayRintis(jsonRequest rintisRequest) (string, string) {
+func structRintisToIso(jsonRequest rintisRequest) (string, string) {
 	log.Println("Converting rintis Request JSON Request to ISO8583")
 	log.Printf("Topup Check Request (JSON): %v\n", jsonRequest)
 
+	// Conv amount to int
 	amount := strconv.Itoa(jsonRequest.TotalAmount)
 
+	// Mapping struct
 	request := map[int]string{
 		2:   jsonRequest.Pan,
 		3:   jsonRequest.ProcessingCode,
@@ -382,12 +384,13 @@ func epayRintis(jsonRequest rintisRequest) (string, string) {
 		126: jsonRequest.TokenData,
 	}
 
+	// Add MTI
 	mti := "0200"
 
 	// Converting request map to isoStruct
 	isoStruct := getIso(request, mti)
 
-	// Adding PAN for Topup Check Request
+	// Add len header
 	isoMessage, _ := isoStruct.ToString()
 	isoHeader := fmt.Sprintf("%04d", uniseg.GraphemeClusterCount(isoMessage))
 	isoRequest := isoHeader + isoMessage

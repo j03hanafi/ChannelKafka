@@ -3,7 +3,7 @@ package main
 import "github.com/gorilla/mux"
 
 // return HTTP handler
-func server() *mux.Router {
+func pathHandler() *mux.Router {
 
 	// create new handler instance
 	router := mux.NewRouter()
@@ -14,7 +14,7 @@ func server() *mux.Router {
 	router.HandleFunc("/ppob/status", ppobStatus).Methods("POST")
 	router.HandleFunc("/topup/buy", topupBuy).Methods("POST")
 	router.HandleFunc("/topup/check", topupCheck).Methods("POST")
-	router.HandleFunc("/epay/rintis", rintis).Methods("POST")
+	router.HandleFunc("/epay/rintis", rintisReqHandler).Methods("POST")
 
 	return router
 }

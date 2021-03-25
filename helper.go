@@ -2,7 +2,6 @@ package main
 
 import (
 	"encoding/json"
-	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -11,11 +10,6 @@ import (
 
 // Response formatter
 func responseFormatter(w http.ResponseWriter, data interface{}, statusCode int) {
-	j, err := json.Marshal(&data)
-	if err != nil {
-		log.Fatalf("Error occured during marshaling. Error: %s", err.Error())
-	}
-	fmt.Println(string(j))
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(statusCode)
 	json.NewEncoder(w).Encode(data)
@@ -46,4 +40,29 @@ func CreateFile(fileName string, content string) string {
 
 	log.Println("File created!")
 	return fileName
+}
+
+func getValueFromArray(head string) resConsume {
+	search := true
+	var res resConsume
+	for search {
+		index := 0
+		for _, ele := range tempStorage {
+			if ele.Head != head {
+				tempStorage[index] = ele
+				index++
+			} else {
+				search = false
+				res = ele
+			}
+		}
+	}
+	return res
+}
+
+func putValueToArray(head string, msg string) {
+	tempStorage = append(tempStorage, resConsume{
+		Head:    head,
+		Content: msg,
+	})
 }

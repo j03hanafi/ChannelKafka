@@ -4,14 +4,14 @@ import (
 	"log"
 	"net/http"
 	"os"
-	"sync"
 )
 
 var (
+	tempStorage     []resConsume            // array for save consume result
 	channelChan     = make(chan string)     // channel for send-receive data from-to `Channel`
 	producerChan    = make(chan string)     // channel for receive data from channelChan and send data to `Producer (Kafka)`
 	consumerChan    = make(chan string)     // channel for receive data from `Consumer (Kafka)` and send data to channelChan
-	channelArrChan  = make(chan resConsume) // channel for receive data from `Consumer (Kafka)` and send data to channelChan
+	channelArrChan  = make(chan resConsume) // channel for
 	producerArrChan = make(chan resConsume) // channel for receive data from `Consumer (Kafka)` and send data to channelChan
 )
 
@@ -30,59 +30,35 @@ func main() {
 
 	// Setting up HTTP Listener and Handler
 	// router will handle any request at any endpoint available in server()
-	router := server()
+	path := pathHandler()
 	go func() {
 		// listen to specific address and handler
 		address := "localhost:6010"
-		err := http.ListenAndServe(address, router)
+		err := http.ListenAndServe(address, path)
 		log.Println("Server started at", address)
 		if err != nil {
 			log.Fatal(err.Error())
 		}
 	}()
 
-	// WaitGroup for make sure that an event is produced to Kafka
-	var wg sync.WaitGroup
-
 	// Get config for Kafka Producer and Consumer
 	broker, producerTopics, consumerTopics, groups := configKafka()
 
 	// Run Consumer (Kafka)
-	go arrConsumer(broker, consumerTopics, groups)
+	go consumeMsgFromKafka(broker, consumerTopics, groups)
 	//go consumer(broker, consumerTopics, groups)
 
 	// loop for checking if there is any new request from `Channel` that has been sent to channelChan
 	for {
 		select {
-		// execute if there is a new request in channelChan
-		case newRequest := <-channelChan:
-			log.Println("New request from `Channel` is ready to produce to Kafka")
-
-			// Add WaitGroup counter to wait until Producer (Kafka) finish producing an event
-			wg.Add(1)
-
-			// Run Producer (Kafka)
-			go producer(&wg, broker, producerTopics, producerChan)
-
-			// Send new request to producerChan, then produce the new request to Kafka
-			producerChan <- newRequest
-
-			// Waiting until Producer (Kafka) finish producing event
-			wg.Wait()
 		case newRequest := <-channelArrChan:
 			log.Println("New request from `Channel` is ready to produce to Kafka")
 
-			// Add WaitGroup counter to wait until Producer (Kafka) finish producing an event
-			wg.Add(1)
-
 			// Run Producer (Kafka)
-			go arrProduce(&wg, broker, producerTopics, producerArrChan)
+			go produceMsgToKafka(broker, producerTopics, producerArrChan)
 
 			// Send new request to producerChan, then produce the new request to Kafka
 			producerArrChan <- newRequest
-
-			// Waiting until Producer (Kafka) finish producing event
-			wg.Wait()
 
 		// keep looping if there is none new request
 		default:

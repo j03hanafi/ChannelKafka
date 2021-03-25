@@ -7,21 +7,6 @@ import (
 	"os"
 )
 
-var arr []resConsume
-
-type resConsume struct {
-	Stan  string `json:"stan"`
-	Msgin string `json:"msgin"`
-}
-
-// Struct for kafkaConfig.json
-type Config struct {
-	Broker         string   `json:"broker"`
-	ProducerTopics []string `json:"producer_topics"`
-	ConsumerTopics []string `json:"consumer_topics"`
-	Group          string   `json:"group"`
-}
-
 // Return config for setting up Kafka Producer and Consumer
 func configKafka() (broker string, producerTopics []string, consumerTopics []string, group string) {
 	log.Printf("Get config for current request")
