@@ -28,11 +28,12 @@ func consumeMsgFromKafka(broker string, topics []string, group string) {
 			log.Printf("Message consumed on %s: %s\n", msg.TopicPartition, string(msg.Value))
 
 			//put value in variable
-			header := string(msg.Headers[0].Value)
-			content := string(msg.Value)
-
+			consumeResult := resConsume{
+				Head:    string(msg.Headers[0].Value),
+				Content: string(msg.Value),
+			}
 			//func for put value in array
-			putValueToArray(header, content)
+			putValueToArray(consumeResult)
 		} else {
 			log.Printf("Consumer error: %v (%v)\n", err, msg)
 		}

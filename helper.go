@@ -60,9 +60,6 @@ func getValueFromArray(head string) resConsume {
 	return res
 }
 
-func putValueToArray(head string, msg string) {
-	tempStorage = append(tempStorage, resConsume{
-		Head:    head,
-		Content: msg,
-	})
+func putValueToArray(data resConsume) {
+	tempStorage = append(tempStorage, data)
 }
