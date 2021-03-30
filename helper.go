@@ -41,3 +41,12 @@ func CreateFile(fileName string, content string) string {
 	log.Println("File created!")
 	return fileName
 }
+
+// Return ip address for client request
+func getIP(r *http.Request) string {
+	forwarded := r.Header.Get("X-FORWARDED-FOR")
+	if forwarded != "" {
+		return forwarded
+	}
+	return r.RemoteAddr
+}

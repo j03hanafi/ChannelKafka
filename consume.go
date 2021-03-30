@@ -6,6 +6,9 @@ import (
 )
 
 func consumer(broker string, topics []string, group string) {
+
+	// TODO: Explore lagi tentang Consumer Group di Kafka
+
 	log.Println("Consumer (Kafka) started!")
 
 	// Setting up Consumer (Kafka) config

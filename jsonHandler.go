@@ -2,7 +2,6 @@ package main
 
 import (
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -12,7 +11,7 @@ import (
 // Handler to PPOB Inquiry request
 func ppobInquiry(w http.ResponseWriter, r *http.Request) {
 
-	log.Println("New PPOB Inquiry request")
+	ipReq := getIP(r)
 
 	// Get request body JSON
 	body, _ := ioutil.ReadAll(r.Body)
@@ -25,13 +24,15 @@ func ppobInquiry(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	log.Printf("New PPOB Inquiry request from %v (Customer_No: %v) @%v", ipReq, request.CustomerNo, time.Now().Format("01-02 15:04:05.000000"))
+
 	// Convert request JSON to ISO message and create request file
 	isoRequest := getIsoPPOBInquiry(request)
 
 	// Send ISO8583 request to channelChan
 	channelChan <- isoRequest
-	fmt.Println("PPOB Inquiry sleep for 5 seconds to process response from channel")
-	time.Sleep(5 * time.Second)
+	//fmt.Println("PPOB Inquiry sleep for 5 seconds to process response from channel")
+	//time.Sleep(5 * time.Second)
 
 	// Get response from consumerChan
 	msg := <-consumerChan
@@ -45,13 +46,13 @@ func ppobInquiry(w http.ResponseWriter, r *http.Request) {
 	if rc == "00" {
 		response := getJsonPPOBInquiry(isoResponse)
 		desc := "PPOB Inquiry Success"
-		log.Println(desc)
+		log.Printf("%v to %v (Customer_No: %v)\n", desc, ipReq, response.Nopel)
 
 		responseFormatter(w, response, 200)
 	} else {
 		response := getJsonUnsuccessfulChipsakti(isoResponse)
 		desc := "PPOB Inquiry Unsuccessful"
-		log.Println(desc)
+		log.Printf("%v to %v (Customer_No: %v)\n", desc, ipReq, request.CustomerNo)
 
 		responseFormatter(w, response, 200)
 	}
@@ -60,7 +61,7 @@ func ppobInquiry(w http.ResponseWriter, r *http.Request) {
 // Handler to PPOB Payment request
 func ppobPayment(w http.ResponseWriter, r *http.Request) {
 
-	log.Println("New PPOB Payment request")
+	ipReq := getIP(r)
 
 	// Get request body JSON
 	body, _ := ioutil.ReadAll(r.Body)
@@ -73,13 +74,15 @@ func ppobPayment(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	log.Printf("New PPOB Payment request from %v (Customer_No: %v) @%v", ipReq, request.CustomerNo, time.Now().Format("01-02 15:04:05.000000"))
+
 	// Convert request JSON to ISO message and create request file
 	isoRequest := getIsoPPOBPayment(request)
 
 	// Send ISO8583 request to channelChan
 	channelChan <- isoRequest
-	fmt.Println("PPOB Payment sleep for 2 seconds to process response from channel")
-	time.Sleep(2 * time.Second)
+	//fmt.Println("PPOB Payment sleep for 2 seconds to process response from channel")
+	//time.Sleep(2 * time.Second)
 
 	// Get response from consumerChan
 	msg := <-consumerChan
@@ -93,13 +96,13 @@ func ppobPayment(w http.ResponseWriter, r *http.Request) {
 	if rc == "00" {
 		response := getJsonPPOBPayment(isoResponse)
 		desc := "PPOB Payment Success"
-		log.Println(desc)
+		log.Printf("%v to %v (Customer_No: %v)\n", desc, ipReq, response.Nopel)
 
 		responseFormatter(w, response, 200)
 	} else {
 		response := getJsonUnsuccessfulChipsakti(isoResponse)
 		desc := "PPOB Payment Unsuccessful"
-		log.Println(desc)
+		log.Printf("%v to %v (Customer_No: %v)\n", desc, ipReq, request.CustomerNo)
 
 		responseFormatter(w, response, 200)
 	}
@@ -108,7 +111,7 @@ func ppobPayment(w http.ResponseWriter, r *http.Request) {
 // Handler to PPOB Status request
 func ppobStatus(w http.ResponseWriter, r *http.Request) {
 
-	log.Println("New PPOB Status request")
+	ipReq := getIP(r)
 
 	// Get request body JSON
 	body, _ := ioutil.ReadAll(r.Body)
@@ -120,6 +123,8 @@ func ppobStatus(w http.ResponseWriter, r *http.Request) {
 		log.Printf("Error unmarshal JSON: %s", err.Error())
 		return
 	}
+
+	log.Printf("New PPOB Status request from %v (Customer_No: %v) @%v", ipReq, request.CustomerNo, time.Now().Format("01-02 15:04:05.000000"))
 
 	// Convert request JSON to ISO message and create request file
 	isoRequest := getIsoPPOBStatus(request)
@@ -139,13 +144,13 @@ func ppobStatus(w http.ResponseWriter, r *http.Request) {
 	if rc == "00" {
 		response := getJsonPPOBStatus(isoResponse)
 		desc := "PPOB Status Success"
-		log.Println(desc)
+		log.Printf("%v to %v (Customer_No: %v)\n", desc, ipReq, response.Nopel)
 
 		responseFormatter(w, response, 200)
 	} else {
 		response := getJsonUnsuccessfulChipsakti(isoResponse)
 		desc := "PPOB Status Unsuccessful"
-		log.Println(desc)
+		log.Printf("%v to %v (Customer_No: %v)\n", desc, ipReq, request.CustomerNo)
 
 		responseFormatter(w, response, 200)
 	}
@@ -154,7 +159,7 @@ func ppobStatus(w http.ResponseWriter, r *http.Request) {
 // Handler to Topup Buy request
 func topupBuy(w http.ResponseWriter, r *http.Request) {
 
-	log.Println("New Topup Buy request")
+	ipReq := getIP(r)
 
 	// Get request body JSON
 	body, _ := ioutil.ReadAll(r.Body)
@@ -166,6 +171,8 @@ func topupBuy(w http.ResponseWriter, r *http.Request) {
 		log.Printf("Error unmarshal JSON: %s", err.Error())
 		return
 	}
+
+	log.Printf("New Topup Buy request from %v (Customer_No: %v) @%v", ipReq, request.CustomerNo, time.Now().Format("01-02 15:04:05.000000"))
 
 	// Convert request JSON to ISO message and create request file
 	isoRequest := getIsoTopupBuy(request)
@@ -185,13 +192,13 @@ func topupBuy(w http.ResponseWriter, r *http.Request) {
 	if rc == "00" {
 		response := getJsonTopupBuy(isoResponse)
 		desc := "Topup Buy Success"
-		log.Println(desc)
+		log.Printf("%v to %v (Customer_No: %v)\n", desc, ipReq, request.CustomerNo)
 
 		responseFormatter(w, response, 200)
 	} else {
 		response := getJsonUnsuccessfulChipsakti(isoResponse)
 		desc := "Topup Buy Unsuccessful"
-		log.Println(desc)
+		log.Printf("%v to %v (Customer_No: %v)\n", desc, ipReq, request.CustomerNo)
 
 		responseFormatter(w, response, 200)
 	}
@@ -200,7 +207,7 @@ func topupBuy(w http.ResponseWriter, r *http.Request) {
 // Handler to Topup Check request
 func topupCheck(w http.ResponseWriter, r *http.Request) {
 
-	log.Println(" New Topup Check request")
+	ipReq := getIP(r)
 
 	// Get request body JSON
 	body, _ := ioutil.ReadAll(r.Body)
@@ -212,6 +219,8 @@ func topupCheck(w http.ResponseWriter, r *http.Request) {
 		log.Printf("Error unmarshal JSON: %s", err.Error())
 		return
 	}
+
+	log.Printf("New Topup Check request from %v (Customer_No: %v) @%v", ipReq, request.CustomerNo, time.Now().Format("01-02 15:04:05.000000"))
 
 	// Convert request JSON to ISO message and create request file
 	reqISO := getIsoTopupCheck(request)
@@ -231,13 +240,13 @@ func topupCheck(w http.ResponseWriter, r *http.Request) {
 	if rc == "00" {
 		response := getJsonTopupCheck(isoResponse)
 		desc := "Topup Check Success"
-		log.Println(desc)
+		log.Printf("%v to %v (Customer_No: %v)\n", desc, ipReq, request.CustomerNo)
 
 		responseFormatter(w, response, 200)
 	} else {
 		response := getJsonUnsuccessfulChipsakti(isoResponse)
 		desc := "Topup Check Unsuccessful"
-		log.Println(desc)
+		log.Printf("%v to %v (Customer_No: %v)\n", desc, ipReq, request.CustomerNo)
 
 		responseFormatter(w, response, 200)
 	}
