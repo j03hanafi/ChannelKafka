@@ -2,237 +2,13 @@ package main
 
 import (
 	"encoding/json"
+	"github.com/mofax/iso8583"
 	"io/ioutil"
 	"log"
 	"net/http"
+	"strconv"
+	"strings"
 )
-
-// Handler to PPOB Inquiry request
-func ppobInquiry(w http.ResponseWriter, r *http.Request) {
-
-	log.Println("New PPOB Inquiry request")
-
-	// Get request body JSON
-	body, _ := ioutil.ReadAll(r.Body)
-	var request PPOBInquiryRequest
-
-	// Unmarshal JSON with request struct
-	err := json.Unmarshal(body, &request)
-	if err != nil {
-		log.Printf("Error unmarshal JSON: %s", err.Error())
-		return
-	}
-
-	// Convert request JSON to ISO message and create request file
-	isoRequest := getIsoPPOBInquiry(request)
-
-	// Send ISO8583 request to channelChan
-	channelChan <- isoRequest
-
-	// Get response from consumerChan
-	msg := <-consumerChan
-	log.Printf("PPOB Inquiry Response (ISO8583): %s\n", msg)
-
-	// Parse response string to ISO8583 data and create response file
-	isoResponse := parseResponse(msg)
-	rc := isoResponse.Elements.GetElements()[39]
-
-	// Check for Response Code (RC)
-	if rc == "00" {
-		response := getJsonPPOBInquiry(isoResponse)
-		desc := "PPOB Inquiry Success"
-		log.Println(desc)
-
-		responseFormatter(w, response, 200)
-	} else {
-		response := getJsonUnsuccessfulChipsakti(isoResponse)
-		desc := "PPOB Inquiry Unsuccessful"
-		log.Println(desc)
-
-		responseFormatter(w, response, 200)
-	}
-}
-
-// Handler to PPOB Payment request
-func ppobPayment(w http.ResponseWriter, r *http.Request) {
-
-	log.Println(" New PPOB Payment request")
-
-	// Get request body JSON
-	body, _ := ioutil.ReadAll(r.Body)
-	var request PPOBPaymentRequest
-
-	// Unmarshal JSON with request struct
-	err := json.Unmarshal(body, &request)
-	if err != nil {
-		log.Printf("Error unmarshal JSON: %s", err.Error())
-		return
-	}
-
-	// Convert request JSON to ISO message and create request file
-	isoRequest := getIsoPPOBPayment(request)
-
-	// Send ISO8583 request to channelChan
-	channelChan <- isoRequest
-
-	// Get response from consumerChan
-	msg := <-consumerChan
-	log.Printf("PPOB Payment Response (ISO8583): %s\n", msg)
-
-	// Parse response string to ISO8583 data and create response file
-	isoResponse := parseResponse(msg)
-	rc := isoResponse.Elements.GetElements()[39]
-
-	// Check for Response Code (RC)
-	if rc == "00" {
-		response := getJsonPPOBPayment(isoResponse)
-		desc := "PPOB Payment Success"
-		log.Println(desc)
-
-		responseFormatter(w, response, 200)
-	} else {
-		response := getJsonUnsuccessfulChipsakti(isoResponse)
-		desc := "PPOB Payment Unsuccessful"
-		log.Println(desc)
-
-		responseFormatter(w, response, 200)
-	}
-}
-
-// Handler to PPOB Status request
-func ppobStatus(w http.ResponseWriter, r *http.Request) {
-
-	log.Println("New PPOB Status request")
-
-	// Get request body JSON
-	body, _ := ioutil.ReadAll(r.Body)
-	var request PPOBStatusRequest
-
-	// Unmarshal JSON with request struct
-	err := json.Unmarshal(body, &request)
-	if err != nil {
-		log.Printf("Error unmarshal JSON: %s", err.Error())
-		return
-	}
-
-	// Convert request JSON to ISO message and create request file
-	isoRequest := getIsoPPOBStatus(request)
-
-	// Send ISO8583 request to channelChan
-	channelChan <- isoRequest
-
-	// Get response from consumerChan
-	msg := <-consumerChan
-
-	// Parse response string to ISO8583 data and create response file
-	isoResponse := parseResponse(msg)
-	rc := isoResponse.Elements.GetElements()[39]
-
-	// Check for Response Code (RC)
-	if rc == "00" {
-		response := getJsonPPOBStatus(isoResponse)
-		desc := "PPOB Status Success"
-		log.Println(desc)
-
-		responseFormatter(w, response, 200)
-	} else {
-		response := getJsonUnsuccessfulChipsakti(isoResponse)
-		desc := "PPOB Status Unsuccessful"
-		log.Println(desc)
-
-		responseFormatter(w, response, 200)
-	}
-}
-
-// Handler to Topup Buy request
-func topupBuy(w http.ResponseWriter, r *http.Request) {
-
-	log.Println(" New Topup Buy request")
-
-	// Get request body JSON
-	body, _ := ioutil.ReadAll(r.Body)
-	var request TopupBuyRequest
-
-	// Unmarshal JSON with request struct
-	err := json.Unmarshal(body, &request)
-	if err != nil {
-		log.Printf("Error unmarshal JSON: %s", err.Error())
-		return
-	}
-
-	// Convert request JSON to ISO message and create request file
-	isoRequest := getIsoTopupBuy(request)
-
-	// Send ISO8583 request to channelChan
-	channelChan <- isoRequest
-
-	// Get response from consumerChan
-	msg := <-consumerChan
-
-	// Parse response string to ISO8583 data and create response file
-	isoResponse := parseResponse(msg)
-	rc := isoResponse.Elements.GetElements()[39]
-
-	// Check for Response Code (RC)
-	if rc == "00" {
-		response := getJsonTopupBuy(isoResponse)
-		desc := "Topup Buy Success"
-		log.Println(desc)
-
-		responseFormatter(w, response, 200)
-	} else {
-		response := getJsonUnsuccessfulChipsakti(isoResponse)
-		desc := "Topup Buy Unsuccessful"
-		log.Println(desc)
-
-		responseFormatter(w, response, 200)
-	}
-}
-
-// Handler to Topup Checl request
-func topupCheck(w http.ResponseWriter, r *http.Request) {
-
-	log.Println(" New Topup Check request")
-
-	// Get request body JSON
-	body, _ := ioutil.ReadAll(r.Body)
-	var request TopupCheckRequest
-
-	// Unmarshal JSON with request struct
-	err := json.Unmarshal(body, &request)
-	if err != nil {
-		log.Printf("Error unmarshal JSON: %s", err.Error())
-		return
-	}
-
-	// Convert request JSON to ISO message and create request file
-	reqISO := getIsoTopupCheck(request)
-
-	// Send ISO8583 request to channelChan
-	channelChan <- reqISO
-
-	// Get response from consumerChan
-	msg := <-consumerChan
-
-	// Parse response string to ISO8583 data and create response file
-	isoResponse := parseResponse(msg)
-	rc := isoResponse.Elements.GetElements()[39]
-
-	// Check for Response Code (RC)
-	if rc == "00" {
-		response := getJsonTopupCheck(isoResponse)
-		desc := "Topup Check Success"
-		log.Println(desc)
-
-		responseFormatter(w, response, 200)
-	} else {
-		response := getJsonUnsuccessfulChipsakti(isoResponse)
-		desc := "Topup Check Unsuccessful"
-		log.Println(desc)
-
-		responseFormatter(w, response, 200)
-	}
-}
 
 func rintisReqHandler(w http.ResponseWriter, r *http.Request) {
 	log.Println("New Request To Rintis")
@@ -268,4 +44,35 @@ func rintisReqHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Make response to request
 	responseFormatter(w, structResponse, 200)
+}
+
+func makeRinRespFromIso(parsedIso iso8583.IsoStruct) (response rintisResponse) {
+	emap := parsedIso.Elements.GetElements()
+
+	// Map ISO8583 format to JSON data
+	response.Pan = strings.Trim(emap[2], " ")
+	response.ProcessingCode = strings.Trim(emap[3], " ")
+	response.TotalAmount, _ = strconv.Atoi(emap[4])
+	response.TransmissionDateTime = strings.Trim(emap[7], " ")
+	response.Stan = strings.Trim(emap[11], " ")
+	response.LocalTransactionTime = strings.Trim(emap[12], " ")
+	response.LocalTransactionDate = strings.Trim(emap[13], " ")
+	response.SettlementDate = strings.Trim(emap[15], " ")
+	response.CaptureDate = strings.Trim(emap[17], " ")
+	response.AcquirerID = strings.Trim(emap[32], " ")
+	response.Track2Data = strings.Trim(emap[35], " ")
+	response.Refnum = strings.Trim(emap[37], " ")
+	response.AuthIdResponse = strings.Trim(emap[38], " ")
+	response.ResponseCode = strings.Trim(emap[39], " ")
+	response.TerminalID = strings.Trim(emap[41], " ")
+	response.AdditionalResponseData = strings.Trim(emap[44], " ")
+	response.Currency = strings.Trim(emap[49], " ")
+	response.TerminalData = strings.Trim(emap[60], " ")
+	response.ReceivingInstitutionIDCode = strings.Trim(emap[100], " ")
+	response.AccountTo = strings.Trim(emap[103], " ")
+	response.TokenData = strings.Trim(emap[126], " ")
+	log.Println("Convert success")
+	log.Printf("Topup Check Response (JSON): %+v\n", response)
+	return response
+
 }
