@@ -37,7 +37,7 @@ func produceMsgToKafka(broker string, topics []string, message <-chan resConsume
 		"bootstrap.servers": broker,
 	})
 	//set variable for topic
-	topic := topics[1]
+	topic := topics[0]
 	if err != nil {
 		panic(err)
 	}
