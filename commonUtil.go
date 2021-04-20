@@ -2,10 +2,12 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
 	"os"
 	"strings"
+	"time"
 )
 
 // Response formatter
@@ -45,17 +47,24 @@ func CreateFile(fileName string, content string) string {
 func getValueFromArray(head string) resConsume {
 	search := true
 	var res resConsume
+	limit := 0
 	for search {
 		index := 0
+		fmt.Println(len(tempStorage))
 		for _, ele := range tempStorage {
-			if ele.Head != head {
-				tempStorage[index] = ele
-				index++
-			} else {
+			if ele.Head == head {
 				search = false
 				res = ele
+				tempStorage = append(tempStorage[:index], tempStorage[index+1:]...)
 			}
+			index++
 		}
+		time.Sleep(100 * time.Millisecond)
+		limit++
+		if limit == 50 {
+			break
+		}
+
 	}
 	return res
 }

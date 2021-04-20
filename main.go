@@ -8,11 +8,9 @@ import (
 
 var (
 	tempStorage     []resConsume            // array for save consume result
-	channelChan     = make(chan string)     // channel for send-receive data from-to `Channel`
-	producerChan    = make(chan string)     // channel for receive data from channelChan and send data to `Producer (Kafka)`
-	consumerChan    = make(chan string)     // channel for receive data from `Consumer (Kafka)` and send data to channelChan
 	channelArrChan  = make(chan resConsume) // channel for
 	producerArrChan = make(chan resConsume) // channel for receive data from `Consumer (Kafka)` and send data to channelChan
+	stoper          = false
 )
 
 func main() {

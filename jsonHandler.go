@@ -38,6 +38,11 @@ func rintisReqHandler(w http.ResponseWriter, r *http.Request) {
 	// Get data from arr consume (tempStorage) with same head
 	isoResponse := getValueFromArray(head)
 
+	if (resConsume{} == isoResponse) {
+		responseFormatter(w, "failed, esception timeout", 504)
+		return
+	}
+
 	isoStructResponse := parseResponse(isoResponse.Content)
 
 	structResponse := makeRinRespFromIso(isoStructResponse)
