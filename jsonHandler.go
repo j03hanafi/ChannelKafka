@@ -2,13 +2,42 @@ package main
 
 import (
 	"encoding/json"
-	"github.com/mofax/iso8583"
+	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
 	"strconv"
 	"strings"
+	"time"
+
+	"github.com/mofax/iso8583"
 )
+
+func adapterReqHandler(w http.ResponseWriter, r *http.Request) {
+	log.Println("New Request To Adapter ISO 20022")
+
+	// Get msg from body
+	body, _ := ioutil.ReadAll(r.Body)
+
+	dataContent := string(body)
+
+	head := strconv.Itoa(makeTimestamp())
+
+	data := resConsume{
+		Head:    head,
+		Content: dataContent,
+	}
+
+	fmt.Println(data)
+
+	channelArrChan <- data
+
+	responseFormatter(w, "data sent", 200)
+}
+
+func makeTimestamp() int {
+	return int(time.Now().UnixNano()) / int(time.Millisecond)
+}
 
 func rintisReqHandler(w http.ResponseWriter, r *http.Request) {
 	log.Println("New Request To Rintis")

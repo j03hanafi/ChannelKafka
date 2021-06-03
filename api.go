@@ -10,6 +10,7 @@ func pathHandler() *mux.Router {
 
 	// Endpoints, Handler function, and HTTP request Method
 	router.HandleFunc("/epay/rintis", rintisReqHandler).Methods("POST")
+	router.HandleFunc("/json/adapter_iso20022", adapterReqHandler).Methods("POST")
 
 	return router
 }
