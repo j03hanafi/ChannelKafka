@@ -3,10 +3,11 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/confluentinc/confluent-kafka-go/kafka"
 	"io/ioutil"
 	"log"
 	"os"
+
+	"github.com/confluentinc/confluent-kafka-go/kafka"
 )
 
 // Return config for setting up Kafka Producer and Consumer

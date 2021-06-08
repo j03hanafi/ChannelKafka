@@ -1,12 +1,10 @@
 {
   "broker": "localhost:9092",
   "producer_topics": [
-    "goroutine-channel",
-    "channelKafka"
+    "mpc.json.bifast.request"
   ],
   "consumer_topics": [
-    "goroutine-biller",
-    "kafkaBiller"
+    "mpc.json.bifast.response"
   ],
   "group": "test-go"
 }
